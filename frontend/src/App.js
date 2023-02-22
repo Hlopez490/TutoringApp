@@ -5,7 +5,7 @@ function App() {
   const [initData, setData] = useState([{}])
 
   useEffect(() => {
-    fetch("/reg").then(
+    fetch("/").then(
       res => res.json()
     ).then(
       data =>{setData(data)}
