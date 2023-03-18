@@ -141,7 +141,14 @@ def favorite():
        
 
 
-
+@app.route('/tutorList', methods=["GET"])
+def tutorList(): 
+    #get list of all tutors
+    if request.method == 'GET':
+        select_tutors = f"SELECT first_name, last_name, phone, email, about_me FROM  Tutor, Student WHERE Tutor.tutor_id = Student.tutor_id"
+        cursor.execute(select_tutors)
+        result = cursor.fetchall()
+        return jsonify(result)
 
 
 
