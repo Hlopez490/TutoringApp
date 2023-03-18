@@ -113,6 +113,38 @@ def login():
 
 
 
+@app.route('/favorites', methods=['POST', "GET"])
+def favorite(): 
+    #Method to add someone to a students favorite list
+    if request.method == 'POST':
+        req = request.get_json()
+        netid = req["netid"]
+        tutor_id = req["tutor_id"]
+        insert_new_favorite = f"INSERT INTO Favorites (tutor_id, student_id) VALUES" \
+            f"(%s,%s)"
+
+        cursor.execute(insert_new_favorite, (tutor_id, netid))
+        db.commit()
+        return jsonify({"msg" : "Successful"})
+    
+    #get list of a student's favorite tutors
+    if request.method == 'GET':
+
+        req = request.get_json()
+        netid = req["netid"]
+
+        select_favorites = f"SELECT first_name, last_name, phone, email, about_me FROM Favorites, Tutor, Student WHERE student_id = %s AND Tutor.tutor_id = Favorites.tutor_id AND Tutor.tutor_id = Student.tutor_id"
+        cursor.execute(select_favorites, (netid,))
+        result = cursor.fetchall()
+        return jsonify(result)
+
+       
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug = True)
