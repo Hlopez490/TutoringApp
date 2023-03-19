@@ -317,7 +317,7 @@ def favorite():
     #Method to add someone to a students favorite list
     if request.method == 'POST':
         req = request.get_json()
-        netid = req["netid"]
+        netid = session["net_id"].upper()
         tutor_id = req["tutor_id"]
         insert_new_favorite = f"INSERT INTO Favorites (tutor_id, student_id) VALUES" \
             f"(%s,%s)"
