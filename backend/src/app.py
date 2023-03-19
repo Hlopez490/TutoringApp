@@ -237,12 +237,10 @@ def make_appointment(tutor_id):
 
 @app.route('/dashboard/<tutor_id>/<start_time>/<end_time>', methods=['DELETE'])
 def delete_appointment(tutor_id, start_time, end_time):
-
     if request.method == 'DELETE':
         student_id = session["net_id"]
 
-
-        delete_appointment = f"DELETE FROM Appointments WHERE student_id = %s AND" \
+        delete_appointment = f"DELETE FROM Appointments WHERE student_id = %s AND " \
                             f"tutor_id = %s AND start_time = %s"
         
         insert_available = f"INSERT INTO Availability (tutor_id, start_time, end_time) VALUES"\
@@ -250,9 +248,14 @@ def delete_appointment(tutor_id, start_time, end_time):
         
         # Appointment can be canceled until 24 hours prior to the scheduled tutoring session
         current_date = datetime.datetime.now()
-        diff = start_time - current_date
-        minutes = divmod(diff.seconds, 60)
-        if minutes[0] >= 1440:
+
+        format = "%Y-%m-%d %H:%M:%S"
+        # convert str start_time to datetime object
+        start_time_datetime = datetime.datetime.strptime(start_time,format)
+        print(start_time)
+        print(end_time)
+        if current_date+datetime.timedelta(hours=24) >= start_time_datetime:
+            
             return {"msg": "Appointments can be canceled until 24 hours prior"\
                     " to the scheduled tutoring session."}, 400
         else:
@@ -260,7 +263,7 @@ def delete_appointment(tutor_id, start_time, end_time):
             cursor.execute(delete_appointment, (student_id, tutor_id, start_time))
             db.commit()
             # update the tutoring session
-            cursor.execute(insert_available, (student_id, tutor_id, start_time, end_time))
+            cursor.execute(insert_available, (tutor_id, start_time, end_time))
             db.commit()
 
             return {"msg": "appointment is canceled"}, 200
