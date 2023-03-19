@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, session
 from connecter import cursor, db
 import bcrypt
 import re
-
+import datetime
+import random
+import string
+import json
 
 app = Flask(__name__)
 app.secret_key = "key"
@@ -75,15 +78,54 @@ def signup():
         hashed_pw = bcrypt.hashpw(passowrd.encode('utf-8'), bcrypt.gensalt())
         
         #insert into student table 
-        insert_new_student = f"INSERT INTO Student (netid, first_name, last_name, phone, email, password, minutes_tutored) VALUES" \
-                            f"(%s,%s,%s,%s,%s,%s,%s) "
+        insert_new_student = f"INSERT INTO Student (netid, first_name, last_name, phone, email, password, minutes_tutored, tutor_id) VALUES" \
+                            f"(%s,%s,%s,%s,%s,%s,%s,%s) "
         
-        cursor.execute(insert_new_student, (netid, first_name, last_name, phone, email, hashed_pw, 0 ))
+        cursor.execute(insert_new_student, (netid, first_name, last_name, phone, email, hashed_pw, 0, "None"))
         db.commit()
 
         return {"msg": "Thanks for signing up. Your account has been succesfully created."}
         
     return {'msg': "SignUp"}
+
+@app.route('/reg_tutor', methods=['POST'])
+def reg_tutor():
+    if request.method == 'POST':
+
+        req = request.get_json()
+        student_id = session["net_id"].upper()
+        print(student_id)
+        about = req["about"]
+        subjects = req["subjects"]
+
+        # tutor id = student_id + 6 random ascii letters
+        rad = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
+        tutor_id = student_id + rad
+
+        #insert into student table 
+        insert_new_tutor = f"INSERT INTO Tutor (tutor_id, about_me) VALUES (%s,%s)"
+        
+        #update student table
+        update_student_table = f"UPDATE Student SET tutor_id = %s WHERE netid = %s"
+
+        # save tutor subjects into
+        assign_subjects = f"INSERT INTO Subjects (tutor_id, subject) VALUES" \
+                                f"(%s, %s)"
+
+        # update student's tutor id 
+        cursor.execute(update_student_table, (tutor_id, student_id))
+        db.commit()
+        
+        # insert new tutor
+        cursor.execute(insert_new_tutor, (tutor_id, about))
+        db.commit()
+
+        for subject in subjects:
+            cursor.execute(assign_subjects, (tutor_id, subject))
+            db.commit()
+
+        return {"msg": "register successfully"}, 200
+    
 
 
 @app.route('/login', methods=['POST', "GET"])
@@ -95,7 +137,7 @@ def login():
         password = req["password"]
 
         # match netid and password
-        select_student = f"SELECT netid, password FROM Student WHERE netid = %s"
+        select_student = f"SELECT netid, password, tutor_id FROM Student WHERE netid = %s"
         cursor.execute(select_student, (netid,))
         result = cursor.fetchall()
         if len(result) < 1:
@@ -103,12 +145,148 @@ def login():
         print(result)
         # check password with hashed password
         if bcrypt.checkpw(password.encode('utf-8'), result[0][1].encode('utf-8')):
+            # indicate if the user is also a tutor
+            if result[0][2] == "None":
+                status = "student"
+            else:
+                status = "tutor"
 
             # add session to student
             session["net_id"] = result[0][0]
-            return {"msg": "login successful"}, 200
+            return {"msg": "login successful",
+                    "status": status}, 200
         else:
             return {"msg": "incorrect password"}, 400
+        
+# logout
+@app.route("/logout", methods = ["POST"])
+def logout():
+    if request.method == "POST":
+        session.pop("net_id", None)
+        return {"msg": "Logged out"}, 200
+    
+
+@app.route('/appointment/<tutor_id>/<start_time>/<end_time>/<subject>', methods = ['POST'])
+def make_appointment(tutor_id, start_time, end_time, subject):
+    if request.method == 'POST':
+        student_id = session["net_id"]
+
+
+        #insert into Appointments table 
+        insert_new_appointment = f"INSERT INTO Appoinments (tutor_id, student_id, start_time, end_time, subject) VALUES" \
+                                f"(%s,%s,%s,%s,%s) "
+        
+        student_appointments =f"SELECT * FROM Appointments WHERE student_id = %s AND start_time > %s"
+
+        
+        # Check if a student has booked a past time appointment
+        current_date = datetime.datetime.now()
+        diff = start_time - current_date
+        diff = divmod(diff.seconds, 60)
+        if diff <0:
+            return {"msg": "overdue appointment"}, 400
+
+        # check if the appointment time is conflicting with student's current appointment
+        cursor.execute(student_appointments, (student_id, current_date))
+        result = cursor.fetchall()
+
+        def time_in_range(start, end, x):
+            """Return true if x is in the range [start, end]"""
+            if start <= end:
+                return start <= x <= end
+            else:
+                return start <= x or x <= end
+
+        if len(result) > 1:
+            for time in result:
+                if time_in_range(time[2], time[3], start_time):
+                    return {"msg":"appointment time conflict"}, 400
+                elif time_in_range(time[2], time[3], end_time):
+                    return {"msg":"appointment time conflict"}, 400
+                elif time_in_range(start_time, end_time, time[2]) and time_in_range(start_time, end_time, time[3]):
+                    return {"msg":"appointment time conflict"}, 400
+
+        # book an appointment
+        cursor.execute(insert_new_appointment, (tutor_id, student_id, start_time, end_time, subject))
+        db.commit()
+
+        # delete available Appointments from Availability table
+        delete_availability = f"DELETE FROM Availability WHERE tutor_id = %s" \
+                                f"AND start_time = %s AND end_time = %s"
+        db.commit()
+        return {"msg": "Appointment Scheduled !!"}, 200
+    
+    return {"msg": "No Appointment Scheduled"}, 200
+
+
+
+@app.route('/dashboard/<tutor_id>/<start_time>/<end_time>', methods=['DELETE'])
+def delete_appointment(tutor_id, start_time, end_time):
+
+    if request.method == 'DELETE':
+        student_id = session["net_id"]
+
+
+        delete_appointment = f"DELETE FROM Appointments WHERE student_id = %s AND" \
+                            f"tutor_id = %s AND start_time = %s"
+        
+        insert_available = f"INSERT INTO Availability (tutor_id, start_time, end_time) VALUES"\
+                            f"(%s,%s,%s)"
+        
+        # Appointment can be canceled until 24 hours prior to the scheduled tutoring session
+        current_date = datetime.datetime.now()
+        diff = start_time - current_date
+        minutes = divmod(diff.seconds, 60)
+        if minutes[0] >= 1440:
+            return {"msg": "Appointments can be canceled until 24 hours prior"\
+                    " to the scheduled tutoring session."}, 400
+        else:
+            # cancel the scheduled tutoring session
+            cursor.execute(delete_appointment, (student_id, tutor_id, start_time))
+            db.commit()
+            # update the tutoring session
+            cursor.execute(insert_available, (student_id, tutor_id, start_time, end_time))
+            db.commit()
+
+            return {"msg": "appointment is canceled"}, 200
+        
+    return {"msg": "no appointments were canceled"}, 200
+
+
+@app.route('/tutor_student_info', methods=['GET'])
+def retrive_students_dashboard():
+    if request.method == 'GET':
+        student_id = session["net_id"].upper()
+        
+        get_tutor_id = f"SELECT tutor_id FROM Student WHERE netid = %s"
+        cursor.execute(get_tutor_id, (student_id,))
+        results = cursor.fetchall()
+        tutor_id = results[0][0]
+        
+        # get all students assigned with specified tutor
+        get_student = f"SELECT A.*, S.email, S.first_name, S.last_name, S.phone FROM Appointments A, Student S WHERE A.tutor_id = %s AND A.student_id = S.netid"
+        
+        cursor.execute(get_student, (tutor_id,))
+        results = cursor.fetchall()
+        counter = 0
+        appointments = {}
+        # format json data
+        for result in results:
+            print(result)
+            counter += 1
+            appointment = {}
+            appointment["student_id"] = result[1]
+            appointment["start_time"] = result[2]
+            appointment["end_time"] = result[3]
+            appointment["subject"] = result[4]
+            appointment["student_email"] = result[5]
+            appointment["student_first_name"] = result[6]
+            appointment["student_last_name"] = result[7]
+            appointment["student_phone"] = result[8]
+            appointments["appointment" + str(counter)] = appointment
+        
+
+        return appointments, 200
 
 
 
