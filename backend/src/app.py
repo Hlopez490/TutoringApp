@@ -121,7 +121,7 @@ def reg_tutor():
         db.commit()
 
         for subject in subjects:
-            cursor.execute(assign_subjects, (tutor_id, subject))
+            cursor.execute(assign_subjects, (tutor_id, subject.upper()))
             db.commit()
 
         return {"msg": "register successfully"}, 200
@@ -166,54 +166,69 @@ def logout():
         return {"msg": "Logged out"}, 200
     
 
-@app.route('/appointment/<tutor_id>/<start_time>/<end_time>/<subject>', methods = ['POST'])
-def make_appointment(tutor_id, start_time, end_time, subject):
+@app.route('/appointment/<tutor_id>', methods = ['POST'])
+def make_appointment(tutor_id):
     if request.method == 'POST':
+        req = request.get_json()
         student_id = session["net_id"]
-
+        start_time = req["start_time"]
+        end_time = req["end_time"]
+        subject = req["subject"].upper()
 
         #insert into Appointments table 
-        insert_new_appointment = f"INSERT INTO Appoinments (tutor_id, student_id, start_time, end_time, subject) VALUES" \
+        insert_new_appointment = f"INSERT INTO Appointments (tutor_id, student_id, start_time, end_time, subject) VALUES" \
                                 f"(%s,%s,%s,%s,%s) "
         
-        student_appointments =f"SELECT * FROM Appointments WHERE student_id = %s AND start_time > %s"
-
-        
-        # Check if a student has booked a past time appointment
-        current_date = datetime.datetime.now()
-        diff = start_time - current_date
-        diff = divmod(diff.seconds, 60)
-        if diff <0:
-            return {"msg": "overdue appointment"}, 400
-
-        # check if the appointment time is conflicting with student's current appointment
-        cursor.execute(student_appointments, (student_id, current_date))
-        result = cursor.fetchall()
-
-        def time_in_range(start, end, x):
-            """Return true if x is in the range [start, end]"""
-            if start <= end:
-                return start <= x <= end
-            else:
-                return start <= x or x <= end
-
-        if len(result) > 1:
-            for time in result:
-                if time_in_range(time[2], time[3], start_time):
-                    return {"msg":"appointment time conflict"}, 400
-                elif time_in_range(time[2], time[3], end_time):
-                    return {"msg":"appointment time conflict"}, 400
-                elif time_in_range(start_time, end_time, time[2]) and time_in_range(start_time, end_time, time[3]):
-                    return {"msg":"appointment time conflict"}, 400
-
-        # book an appointment
-        cursor.execute(insert_new_appointment, (tutor_id, student_id, start_time, end_time, subject))
-        db.commit()
+        # get student's current appointments
+        student_appointments =f"SELECT start_time, end_time FROM Appointments WHERE student_id = %s AND start_time > %s"
 
         # delete available Appointments from Availability table
         delete_availability = f"DELETE FROM Availability WHERE tutor_id = %s" \
                                 f"AND start_time = %s AND end_time = %s"
+        
+        # Check if a student has booked a past time appointment
+        current_datetime = datetime.datetime.now()
+        
+        
+        format = "%Y-%m-%d %H:%M:%S"
+        # convert str start_time to datetime object
+        start_time_datetime = datetime.datetime.strptime(start_time,format)
+        end_time_datetime = datetime.datetime.strptime(end_time,format)
+
+        if start_time_datetime < current_datetime:
+            return {"msg": "overdue appointment"}, 400
+        
+    
+        # check if the appointment time is conflicting with student's current appointment
+        cursor.execute(student_appointments, (student_id, current_datetime))
+        result = cursor.fetchall()
+        
+        def time_in_range(start, end, time):
+            """Return true if x is in the range [start, end]"""
+            if start <= end:
+                time = start <= time <= end
+                return time
+            else:
+                print(1)
+                return start <= time or time <= end
+
+        if len(result) > 1:
+            for time in result:
+                if time_in_range(time[0], time[1], start_time_datetime):
+                    return {"msg":"appointment time conflict"}, 400
+                elif time_in_range(time[0], time[1], end_time_datetime):
+                    return {"msg":"appointment time conflict"}, 400
+                elif time_in_range(start_time_datetime, end_time_datetime, time[0]) \
+                    and time_in_range(start_time_datetime, end_time_datetime, time[1]):
+                    return {"msg":"appointment time conflict"}, 400
+        
+        # book an appointment
+        cursor.execute(insert_new_appointment, (tutor_id, student_id, start_time, end_time, subject))
         db.commit()
+        
+        cursor.execute(delete_availability, (tutor_id, start_time, end_time))
+        db.commit()
+        
         return {"msg": "Appointment Scheduled !!"}, 200
     
     return {"msg": "No Appointment Scheduled"}, 200
@@ -317,7 +332,6 @@ def favorite():
         return jsonify(result)
 
        
-
 
 @app.route('/tutorList', methods=["GET"])
 def tutorList(): 
