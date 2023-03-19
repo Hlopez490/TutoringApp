@@ -141,8 +141,9 @@ def login():
         cursor.execute(select_student, (netid,))
         result = cursor.fetchall()
         if len(result) < 1:
-            return {"msg": "no such netid"}, 400
-        print(result)
+            return {"msg": "no such netid",
+                    "success": False}, 400
+        
         # check password with hashed password
         if bcrypt.checkpw(password.encode('utf-8'), result[0][1].encode('utf-8')):
             # indicate if the user is also a tutor
@@ -154,9 +155,11 @@ def login():
             # add session to student
             session["net_id"] = result[0][0]
             return {"msg": "login successful",
-                    "status": status}, 200
+                    "status": status,
+                    "success": True}, 200
         else:
-            return {"msg": "incorrect password"}, 400
+            return {"msg": "incorrect password",
+                    "success": False}, 400
         
 # logout
 @app.route("/logout", methods = ["POST"])
