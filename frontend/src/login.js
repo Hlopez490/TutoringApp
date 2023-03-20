@@ -21,9 +21,21 @@ export default function login() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      netId: data.get('Net ID'),
+      netId: data.get('netid'),
       password: data.get('password'),
     });
+
+    const value = Object.fromEntries(data.entries());
+
+    fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-type': "application/json",
+      },
+      body: JSON.stringify(value),
+    })
+    .then((response) => response.json())
+    .then((data) => console.log(data));
   };
 
   return (
@@ -50,10 +62,10 @@ export default function login() {
               margin="normal"
               required
               fullWidth
-              id="netId"
+              id="netid"
               label="Net ID"
-              name="Net ID"
-              autoComplete="netId"
+              name="netid"
+              autoComplete="netid"
               autoFocus
             />
             <TextField

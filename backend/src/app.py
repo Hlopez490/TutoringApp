@@ -132,6 +132,7 @@ def reg_tutor():
 def login():
     if request.method == 'POST':
         req = request.get_json()
+        print(req)
 
         netid = req["netid"].upper()
         password = req["password"]
