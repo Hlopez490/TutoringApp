@@ -1,22 +1,26 @@
 import {useState, useEffect} from 'react'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+import Login from './login'
+import SignUp from './SignUp'
 
 function App() {
 
-  const [initData, setData] = useState([{}])
-
-  useEffect(() => {
-    fetch("/").then(
-      res => res.json()
-    ).then(
-      data =>{setData(data)}
-    )
-  }, [])
+  
 
 
   return (
-    <div className="App">
-      <p>{initData.script}</p>
-    </div>
+    <Router>
+    <Routes>
+      <Route exact path="/" element={<Login />} />
+      <Route path="/signUp" element={<SignUp />} />
+    </Routes>
+  </Router>
   );
 }
 
