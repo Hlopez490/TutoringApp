@@ -6,9 +6,14 @@ import datetime
 import random
 import string
 import json
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "key"
+
+UPLOAD_FOLDER = "static/images"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 @app.route('/', methods=['POST', "GET"])
@@ -92,18 +97,28 @@ def signup():
 def reg_tutor():
     if request.method == 'POST':
 
-        req = request.get_json()
         student_id = session["net_id"].upper()
-        print(student_id)
-        about = req["about"]
-        subjects = req["subjects"]
+        about = request.form.get('about')
+        subjects = request.form.get('subjects')
+        subjects = list(subjects.split(","))
+
+        # use default image if no profile picture uploaded
+        if 'image' not in request.files:
+            image_name = "default.jpg"
+        else:
+            image = request.files["image"]
+            # save the image in "static\images"
+            image.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config["UPLOAD_FOLDER"], secure_filename(image.filename)))
+            #image.save(os.path.join(os.path.abspath(os.pardir),"backend", app.config["UPLOAD_FOLDER"], secure_filename(image.filename)))
+            image_name = image.filename
+        
 
         # tutor id = student_id + 6 random ascii letters
         rad = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
         tutor_id = student_id + rad
 
         #insert into student table 
-        insert_new_tutor = f"INSERT INTO Tutor (tutor_id, about_me) VALUES (%s,%s)"
+        insert_new_tutor = f"INSERT INTO Tutor (tutor_id, about_me, profile_pic) VALUES (%s,%s,%s)"
         
         #update student table
         update_student_table = f"UPDATE Student SET tutor_id = %s WHERE netid = %s"
@@ -117,7 +132,7 @@ def reg_tutor():
         db.commit()
         
         # insert new tutor
-        cursor.execute(insert_new_tutor, (tutor_id, about))
+        cursor.execute(insert_new_tutor, (tutor_id, about, image_name))
         db.commit()
 
         for subject in subjects:

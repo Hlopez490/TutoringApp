@@ -14,7 +14,7 @@ CREATE TABLE Student(
 CREATE TABLE Tutor(
     tutor_id VARCHAR(255),
     about_me VARCHAR(5000),
-    profile_pic BLOB,
+    profile_pic VARCHAR(255),
     PRIMARY KEY(tutor_id),
     FOREIGN KEY(tutor_id) REFERENCES Student(tutor_id)
 );
