@@ -354,7 +354,6 @@ def favorite():
         return jsonify(result)
 
        
-
 @app.route('/tutorList', methods=["GET"])
 def tutorList(): 
     #get list of all tutors
@@ -364,6 +363,84 @@ def tutorList():
         result = cursor.fetchall()
         return jsonify(result)
 
+
+@app.route('/availability', methods=['POST', 'GET'])
+def availability():
+    if request.method == 'POST':
+        req = request.get_json()
+        start_time = req["start_time"]
+        end_time = req["end_time"]
+
+        # get tutor id
+        student_id = session["net_id"].upper()
+        
+        get_tutor_id = f"SELECT tutor_id FROM Student WHERE netid = %s"
+        cursor.execute(get_tutor_id, (student_id,))
+        results = cursor.fetchall()
+        tutor_id = results[0][0]
+
+        current_availability = f"SELECT start_time, end_time FROM Availability WHERE tutor_id = %s"
+        insert_available = f'INSERT INTO Availability (tutor_id, start_time, end_time) VALUES (%s, %s, %s, %s)'
+        # Check if a student has booked a past time appointment
+
+        current_datetime = datetime.datetime.now()
+        
+        
+        format = "%Y-%m-%d %H:%M:%S"
+        # convert str start_time to datetime object
+        start_time_datetime = datetime.datetime.strptime(start_time,format)
+        end_time_datetime = datetime.datetime.strptime(end_time,format)
+
+        if start_time_datetime < current_datetime:
+            return {"msg": "can't assign pass time availability"}, 400
+        
+    
+        # check if the appointment time is conflicting with student's current appointment
+        cursor.execute(current_availability, (tutor_id, ))
+        result = cursor.fetchall()
+        
+        def time_in_range(start, end, time):
+            """Return true if x is in the range [start, end]"""
+            if start <= end:
+                time = start <= time <= end
+                return time
+            else:
+                print(1)
+                return start <= time or time <= end
+
+        if len(result) > 1:
+            for time in result:
+                if time_in_range(time[0], time[1], start_time_datetime):
+                    return {"msg":"availability time conflict"}, 400
+                elif time_in_range(time[0], time[1], end_time_datetime):
+                    return {"msg":"availability time conflict"}, 400
+                elif time_in_range(start_time_datetime, end_time_datetime, time[0]) \
+                    and time_in_range(start_time_datetime, end_time_datetime, time[1]):
+                    return {"msg":"availability time conflict"}, 400
+
+        # add new availability
+        cursor.execute(insert_available, (tutor_id, start_time, end_time))
+        db.commit()
+        
+        return {"msg": "New Availability Scheduled !!"}, 200
+
+    elif request.method == 'GET':
+        current_availability = f"SELECT * FROM Availability"
+        cursor.execute(current_availability)
+        results = cursor.fetchall()
+        counter = 0
+        availabilitys = {}
+        # format json data
+        for result in results:
+            print(result)
+            counter += 1
+            availability = {}
+            availability["tutor_id"] = result[0]
+            availability["start_time"] = result[1]
+            availability["end_time"] = result[2]
+            availabilitys["availability" + str(counter)] = availability
+        
+        return availabilitys, 200
 
 
 
