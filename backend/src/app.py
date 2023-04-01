@@ -35,22 +35,13 @@ def signup():
         email = req['email']
         passowrd = req['password']
 
-        # check if netid or email or phone already exists
-        select_student = f"SELECT * FROM Student WHERE netid = %s or email = %s or phone = %s"
-        cursor.execute(select_student,(netid, email, phone))
+        # check if netid or email already exists
+        select_student = f"SELECT * FROM Student WHERE netid = %s or email = %s"
+        cursor.execute(select_student,(netid, email))
         result = cursor.fetchall()
         
         if len(result) > 0:
-            return {"msg": "Student NetId or email or phone number already been used."}, 400
-
-        
-        # check if netid or email or phone already exists
-        select_student = f"SELECT * FROM Student WHERE netid = %s or email = %s or phone = %s"
-        cursor.execute(select_student,(netid, email, phone))
-        result = cursor.fetchall()
-
-        if len(result) > 0:
-            return {"msg": "Student NetId or email or phone number already been used."}, 400
+            return {"msg": "Student NetId or email already been used."}, 400
 
         # check if netid is correct
         # a netid should start with 3 letters and follow by 6 digits
