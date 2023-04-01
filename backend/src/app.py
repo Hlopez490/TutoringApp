@@ -39,7 +39,7 @@ def signup():
         select_student = f"SELECT * FROM Student WHERE netid = %s or email = %s or phone = %s"
         cursor.execute(select_student,(netid, email, phone))
         result = cursor.fetchall()
-        print(result)
+        
         if len(result) > 0:
             return {"msg": "Student NetId or email or phone number already been used."}, 400
 
@@ -81,6 +81,7 @@ def signup():
         
         #hash passowrd
         hashed_pw = bcrypt.hashpw(passowrd.encode('utf-8'), bcrypt.gensalt())
+        hashed_pw = hashed_pw.decode()
         
         #insert into student table 
         insert_new_student = f"INSERT INTO Student (netid, first_name, last_name, phone, email, password, minutes_tutored, tutor_id) VALUES" \
@@ -147,7 +148,6 @@ def reg_tutor():
 def login():
     if request.method == 'POST':
         req = request.get_json()
-        print(req)
 
         netid = req["netid"].upper()
         password = req["password"]
