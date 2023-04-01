@@ -92,7 +92,7 @@ def reg_tutor():
         student_id = session["net_id"].upper()
         about = request.form.get('about')
         subjects = request.form.get('subjects')
-        subjects = list(subjects.split(","))
+        subjects = list(subjects.split(", "))
 
         # use default image if no profile picture uploaded
         if 'image' not in request.files:
