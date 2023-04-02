@@ -8,6 +8,7 @@ import string
 import json
 import os
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "key"
@@ -71,8 +72,9 @@ def signup():
 
         
         #hash passowrd
-        hashed_pw = bcrypt.hashpw(passowrd.encode('utf-8'), bcrypt.gensalt())
-        hashed_pw = hashed_pw.decode()
+        #hashed_pw = bcrypt.hashpw(passowrd.encode('utf-8'), bcrypt.gensalt())
+        #hashed_pw = hashed_pw.decode()
+        hashed_pw = generate_password_hash(passowrd)
         
         #insert into student table 
         insert_new_student = f"INSERT INTO Student (netid, first_name, last_name, phone, email, password, minutes_tutored, tutor_id) VALUES" \
@@ -152,7 +154,8 @@ def login():
                     "success": False}, 400
         
         # check password with hashed password
-        if bcrypt.checkpw(password.encode('utf-8'), result[0][1].encode('utf-8')):
+        #if bcrypt.checkpw(password.encode('utf-8'), result[0][1].encode('utf-8')):
+        if check_password_hash(result[0][1], password):
             # indicate if the user is also a tutor
             if result[0][2] == "None":
                 status = "student"
