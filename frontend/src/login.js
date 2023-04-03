@@ -2,13 +2,15 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-
+import {useState, useEffect} from 'react'
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
+import Alert from '@mui/material/Alert';
 
 
 
@@ -16,7 +18,19 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-export default function login() {
+//export default function login() {
+  //const navigate = useNavigate();
+
+  const Login=()=> {
+    const navigate = useNavigate();
+    const [error, setError] = useState(null)
+    const [isWarning, setIsWarning] = useState(false)
+    const [authenticated, setauthenticated] = useState(
+      localStorage.getItem(localStorage.getItem("authenticated") || false)
+      );
+
+
+    
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -34,8 +48,21 @@ export default function login() {
       },
       body: JSON.stringify(value),
     })
-    .then((response) => response.json())
-    .then((data) => console.log(data));
+    .then(response => {
+      //console.log(request)        
+      if (response.ok) {
+          localStorage.setItem("authenticated", true);
+          navigate("/dashboard");
+          return response.json();
+        } else {
+           throw new Error('Incorrect ID or Password');
+        }
+   })
+    .then((data) => console.log(data))
+    .catch(err => {
+      setError(err.message); 
+      setIsWarning(true); 
+    });
   };
 
   return (
@@ -94,6 +121,7 @@ export default function login() {
                 </Link>
               </Grid>
             </Grid>
+            {error?<Alert severity="error">{error}</Alert>:null} 
           </Box>
         </Box>
         
@@ -101,3 +129,4 @@ export default function login() {
     </ThemeProvider>
   );
 }
+export default Login;
