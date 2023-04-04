@@ -10,18 +10,53 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
+import {useState, useEffect} from 'react';
+import Alert from '@mui/material/Alert';
 
 
 
 const theme = createTheme();
 
 export default function SignUp() {
+  const navigate = useNavigate();
+  const [error, setError] = useState(null)
+  const [isWarning, setIsWarning] = useState(false)
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
+      netId: data.get('netid'),
+      first_name: data.get('first_name'),
+      last_name: data.get('last_name'),
+      phone: data.get('phone'),
       email: data.get('email'),
       password: data.get('password'),
+    });
+
+    const value = Object.fromEntries(data.entries());
+
+    fetch('/sign-up', {
+      method: 'POST',
+      headers: {
+        'Content-type': "application/json",
+      },
+      body: JSON.stringify(value),
+    })
+    .then(response => {
+      //console.log(request)        
+      if (response.ok) {
+          navigate("/");
+        } else {
+          return response.json().then((body) => {
+            throw new Error(body.msg)
+          })
+        }
+   })
+    .catch(err => {
+      setError(err.message); 
+      setIsWarning(true); 
     });
   };
 
@@ -48,10 +83,10 @@ export default function SignUp() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="first_name"
                   required
                   fullWidth
-                  id="firstName"
+                  id="first_name"
                   label="First Name"
                   autoFocus
                 />
@@ -60,9 +95,9 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="lastName"
+                  id="last_name"
                   label="Last Name"
-                  name="lastName"
+                  name="last_name"
                   autoComplete="family-name"
                 />
               </Grid>
@@ -70,10 +105,10 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="netId"
+                  id="netid"
                   label="Net ID"
-                  name="netId"
-                  autoComplete="netId"
+                  name="netid"
+                  autoComplete="netid"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -124,6 +159,7 @@ export default function SignUp() {
                 </Link>
               </Grid>
             </Grid>
+            {error?<Alert severity="error">{error}</Alert>:null} 
           </Box>
         </Box>
         

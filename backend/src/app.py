@@ -27,7 +27,8 @@ def index():
 def signup():
     if request.method == 'POST':
         req = request.get_json()
-
+        
+        print(req)
         # get student data
         netid = req["netid"].upper()
         first_name = req["first_name"].upper()
