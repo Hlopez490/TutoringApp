@@ -9,7 +9,7 @@ import {
 import Login from './login'
 import SignUp from './SignUp'
 import Dashboard from "./Dashboard";
-
+import AllTutors from './AllTutors';
 function App() {
 
   
@@ -21,6 +21,7 @@ function App() {
       <Route exact path="/" element={<Login />} />
       <Route path="/signUp" element={<SignUp />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/allTutors" element={<AllTutors/>} />
     </Routes>
   </Router>
   );
