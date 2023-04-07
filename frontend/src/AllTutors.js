@@ -1,16 +1,27 @@
 import { useEffect, useState } from "react";
+import TutorList from "./components/TutorList";
 const AllTutors = () => {
     
     
-    const [tutors, setTutors] = useState([
-        { aboutMe: 'Python Expert', email: 'j@gmail.com', first_name: 'John',last_name: 'My new website',aboutMe: 'My new website', id: 1 },
-        { title: 'Welcome party!', body: 'lorem ipsum...', author: 'yoshi', id: 2 }
-      ])
+    const [tutors, setTutors] = useState(null)
+
+    useEffect(() => {
+        fetch('/tutorList', {
+            method: 'GET'
+        
+          })
+          .then(res => {
+            return res.json();
+          })
+          .then(data => {
+            setTutors(data);
+          })
+      }, [])
 
   
     return (
       <div className="home">
-        <p>Hello World</p>
+        {tutors && <TutorList tutors={tutors} />}
       </div>
     );
   }
