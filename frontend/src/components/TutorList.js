@@ -24,10 +24,10 @@ const TutorList = ({ tutors }) => {
         
       <div className="blog-list">
         <Container sx = {{py: 8}} maxWidth ="md" columnSpacing={1}>
-        <Grid container rowSpacing={20} columnSpacing={1}>
+        <Grid container rowSpacing={2} columnSpacing={1}>
         {tutors.map(tutor => (
             <Grid item key={tutor} md={6} >
-          <div style={{margin: '25%'}}>
+          <div style={{margin: '5%, 5%, 5%, 5%'}}>
             
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardHeader

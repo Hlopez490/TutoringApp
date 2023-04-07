@@ -87,6 +87,8 @@ def signup():
         
     return {'msg': "SignUp"}
 
+
+
 @app.route('/reg_tutor', methods=['POST'])
 def reg_tutor():
     if request.method == 'POST':
@@ -377,7 +379,15 @@ def favorite():
         cursor.execute(select_favorites, (netid,))
         result = cursor.fetchall()
         return jsonify(result)
-
+@app.route('/update')
+def update():
+    update = f"UPDATE Student SET first_name = %s, last_name = %s WHERE netid = %s"
+    cursor.execute(update, ("Joanna","Smith","TUT100002"))
+    cursor.execute(update, ("Leonie","Green","TUT100003"))
+    cursor.execute(update, ("Ashley","Miller","TUT100004"))
+    cursor.execute(update, ("Ruby","Yang","TUT100005"))
+    db.commit()
+    return {"msg": "works"}, 200
        
 @app.route('/tutorList', methods=["GET"])
 def tutorList(): 
