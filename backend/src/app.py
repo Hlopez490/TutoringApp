@@ -200,6 +200,12 @@ def make_appointment(tutor_id):
         delete_availability = f"DELETE FROM Availability WHERE tutor_id = %s" \
                                 f"AND start_time = %s AND end_time = %s"
         
+        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored + %s" \
+                                f"WHERE netid = %s"
+        
+        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored + %s" \
+                            f"WHERE tutor_id = %s"
+        
         # Check if a student has booked a past time appointment
         current_datetime = datetime.datetime.now()
         
@@ -235,12 +241,22 @@ def make_appointment(tutor_id):
                 elif time_in_range(start_time_datetime, end_time_datetime, time[0]) \
                     and time_in_range(start_time_datetime, end_time_datetime, time[1]):
                     return {"msg":"appointment time conflict"}, 400
-        
+                
+        minutessince = int((end_time_datetime - start_time_datetime).total_seconds() / 60)
+
         # book an appointment
         cursor.execute(insert_new_appointment, (tutor_id, student_id, start_time, end_time, subject))
         db.commit()
         
         cursor.execute(delete_availability, (tutor_id, start_time, end_time))
+        db.commit()
+
+        # update tutor total tutored hours
+        cursor.execute(update_tutor_hour, (minutessince, tutor_id))
+        db.commit()
+        
+        # update student total tutored hours
+        cursor.execute(update_student_hour, (minutessince, student_id))
         db.commit()
         
         return {"msg": "Appointment Scheduled !!"}, 200
@@ -254,6 +270,12 @@ def delete_appointment(tutor_id, start_time, end_time):
     if request.method == 'DELETE':
         student_id = session["net_id"]
 
+        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s" \
+                                f"WHERE netid = %s"
+        
+        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s" \
+                            f"WHERE tutor_id = %s"
+
         delete_appointment = f"DELETE FROM Appointments WHERE student_id = %s AND " \
                             f"tutor_id = %s AND start_time = %s"
         
@@ -266,19 +288,28 @@ def delete_appointment(tutor_id, start_time, end_time):
         format = "%Y-%m-%d %H:%M:%S"
         # convert str start_time to datetime object
         start_time_datetime = datetime.datetime.strptime(start_time,format)
-        print(start_time)
-        print(end_time)
+        end_time_datetime = datetime.datetime.strptime(end_time,format)
+
         if current_date+datetime.timedelta(hours=24) >= start_time_datetime:
             
             return {"msg": "Appointments can be canceled until 24 hours prior"\
                     " to the scheduled tutoring session."}, 400
         else:
+            minutessince = int((end_time_datetime - start_time_datetime).total_seconds() / 60)
+
             # cancel the scheduled tutoring session
             cursor.execute(delete_appointment, (student_id, tutor_id, start_time))
             db.commit()
             # update the tutoring session
             cursor.execute(insert_available, (tutor_id, start_time, end_time))
             db.commit()
+            # update tutor total tutored hours
+            cursor.execute(update_tutor_hour, (minutessince, tutor_id))
+            db.commit()
+            # update student total tutored hours
+            cursor.execute(update_student_hour, (minutessince, student_id))
+            db.commit()
+
 
             return {"msg": "appointment is canceled"}, 200
         
