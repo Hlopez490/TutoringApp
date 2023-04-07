@@ -388,7 +388,7 @@ def tutorList():
         cursor.execute(select_tutors)
         results = cursor.fetchall()
         counter = 0
-        Tutors = {}
+        Tutors = []
         # format json data
         for result in results:
             counter += 1
@@ -402,16 +402,16 @@ def tutorList():
             tutor["profile_pic"] = result[6]
             tutor["tutor_id"] = result[7]
             tutor["subjects"] = []
-            Tutors["tutor" + str(counter)] = tutor
-
+            Tutors.append(tutor)
+        
         cursor.execute(select_subjects)
         result_ = cursor.fetchall()
         print(result_)
         for result in result_:
             for tutor in Tutors:
-                if Tutors[tutor]["tutor_id"] == result[1]:
-                    Tutors[tutor]["subjects"].append(result[0])
-                    
+                if tutor["tutor_id"] == result[1]:
+                    tutor["subjects"].append(result[0])
+                  
         return Tutors
 
 
