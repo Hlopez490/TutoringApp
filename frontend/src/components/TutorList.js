@@ -50,7 +50,9 @@ const TutorList = ({ tutors }) => {
               </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">Add to Favorites</Button>
+                <IconButton aria-label="add to favorites">
+                    <FavoriteIcon />
+                </IconButton>
                 <Button size="small">Book Appointment</Button>
             </CardActions>
           </Card>

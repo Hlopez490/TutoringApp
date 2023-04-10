@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import TutorList from "./components/TutorList";
+import NavBar from "./components/NavBar";
 const AllTutors = () => {
     
     
@@ -21,6 +22,7 @@ const AllTutors = () => {
   
     return (
       <div className="home">
+        <NavBar title ="All Tutors" />
         {tutors && <TutorList tutors={tutors} />}
       </div>
     );
