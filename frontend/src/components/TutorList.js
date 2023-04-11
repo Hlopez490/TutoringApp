@@ -17,6 +17,8 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 
 
 const TutorList = ({ tutors }) => {
@@ -44,6 +46,10 @@ const TutorList = ({ tutors }) => {
               
             />
             <CardContent>
+                {tutor.subjects.map(subject => (
+                    <Chip label={ subject } size = "small" />
+
+                ))} <br/><br/>
               <Typography variant="body2" color="text.secondary">
                 Phone: { tutor.phone } <br />
               { tutor.about_me }
