@@ -9,6 +9,7 @@ const AllTutors = () => {
     
     
     const [tutors, setTutors] = useState(null)
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         fetch('/tutorList', {
@@ -48,10 +49,12 @@ const AllTutors = () => {
                     flexDirection: "column",
                     padding: 20
                 }}>
-            <TextField id="search" label="Search..." variant="standard" />
+            <TextField id="search" label="Search..." variant="standard" onChange={(e) => setSearch(e.target.value.toLowerCase())}/>
             </div>
             </Container>
-        {tutors && <TutorList tutors={tutors} />}
+        {tutors && <TutorList tutors={tutors.filter((asd) =>
+          asd.first_name.toLowerCase().includes(search) || asd.last_name.toLowerCase().includes(search)
+       )} />}
       </div>
     );
   }

@@ -19,9 +19,14 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import { useEffect, useState } from "react";
+
+
 
 
 const TutorList = ({ tutors }) => {
+    useEffect(() => {
+    }, [tutors]);
     return (
         
       <div className="blog-list">
