@@ -57,7 +57,7 @@ const TutorList = ({ tutors }) => {
                 ))} <br/><br/>
               <Typography variant="body2" color="text.secondary">
                 Phone: { tutor.phone } <br />
-              { tutor.about_me }
+              { tutor.about_me } <br/>
               </Typography>
             </CardContent>
             <CardActions>

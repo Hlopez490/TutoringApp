@@ -10,6 +10,7 @@ import Login from './login'
 import SignUp from './SignUp'
 import Dashboard from "./Dashboard";
 import AllTutors from './AllTutors';
+import FavoriteTutors from './FavoriteTutors';
 function App() {
 
   
@@ -22,6 +23,7 @@ function App() {
       <Route path="/signUp" element={<SignUp />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/allTutors" element={<AllTutors/>} />
+      <Route path="/favoriteTutors" element={<FavoriteTutors/>} />
     </Routes>
   </Router>
   );

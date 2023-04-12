@@ -372,13 +372,41 @@ def favorite():
     #get list of a student's favorite tutors
     if request.method == 'GET':
 
-        req = request.get_json()
-        netid = req["netid"]
+        #req = request.get_json()
+        netid = session["net_id"].upper()
 
-        select_favorites = f"SELECT first_name, last_name, phone, email, about_me FROM Favorites, Tutor, Student WHERE student_id = %s AND Tutor.tutor_id = Favorites.tutor_id AND Tutor.tutor_id = Student.tutor_id"
+        select_favorites = f"SELECT first_name, last_name, minutes_tutored, phone, email, about_me, profile_pic, Tutor.tutor_id FROM Favorites, Tutor, Student WHERE student_id = %s AND Tutor.tutor_id = Favorites.tutor_id AND Tutor.tutor_id = Student.tutor_id"
+        select_subjects = f"SELECT S.subject, T.tutor_id FROM Subjects S, Tutor T WHERE T.tutor_id = S.tutor_id"
+        print("Hello")
         cursor.execute(select_favorites, (netid,))
-        result = cursor.fetchall()
-        return jsonify(result)
+        results = cursor.fetchall()
+        counter = 0
+        Tutors = []
+        # format json data
+        for result in results:
+            counter += 1
+            tutor = {}
+            tutor["first_name"] = result[0]
+            tutor["last_name"] = result[1]
+            tutor["minutes_tutored"] = result[2]
+            tutor["phone"] = result[3]
+            tutor["email"] = result[4]
+            tutor["about_me"] = result[5]
+            tutor["profile_pic"] = result[6]
+            tutor["tutor_id"] = result[7]
+            tutor["subjects"] = []
+            Tutors.append(tutor)
+        
+        cursor.execute(select_subjects)
+        result_ = cursor.fetchall()
+        print(result_)
+        for result in result_:
+            for tutor in Tutors:
+                if tutor["tutor_id"] == result[1]:
+                    tutor["subjects"].append(result[0])
+                  
+        return Tutors
+        
 @app.route('/update')
 def update():
     update = f"UPDATE Student SET first_name = %s, last_name = %s WHERE netid = %s"

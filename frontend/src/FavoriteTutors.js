@@ -12,7 +12,7 @@ import FormControl from '@mui/material/FormControl';
 
 
 
-const AllTutors = () => {
+const FavoriteTutors = () => {
     
     
     const [tutors, setTutors] = useState(null)
@@ -20,7 +20,7 @@ const AllTutors = () => {
     const [subject, setSubject] = useState([""]); 
 
     useEffect(() => {
-        fetch('/tutorList', {
+        fetch('/favorites', {
             method: 'GET'
         
           })
@@ -41,7 +41,7 @@ const AllTutors = () => {
     return (
 
       <div className="home">
-        <NavBar title ="All Tutors" />
+        <NavBar title ="Favorite Tutors" />
         <Container maxWidth="sm">
             <Typography
               component="h1"
@@ -50,7 +50,7 @@ const AllTutors = () => {
               color="text.primary"
               gutterBottom
             >
-              All Tutors
+              Favorite Tutors
             </Typography>
             <Typography variant="h5" align="center" color="text.secondary" paragraph>
               Use search bar and filters to help find specific tutors.
@@ -97,4 +97,4 @@ const AllTutors = () => {
     );
   }
    
-  export default AllTutors;
+  export default FavoriteTutors;
