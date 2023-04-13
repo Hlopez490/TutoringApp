@@ -440,7 +440,7 @@ def tutorList():
                 if tutor["tutor_id"] == result[1]:
                     tutor["subjects"].append(result[0])
                   
-        return Tutors
+        return Tutors, 200
 
 
 @app.route('/availability', methods=['POST', 'GET'])
