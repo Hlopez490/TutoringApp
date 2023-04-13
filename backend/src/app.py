@@ -332,12 +332,10 @@ def retrive_students_dashboard():
         
         cursor.execute(get_student, (tutor_id,))
         results = cursor.fetchall()
-        counter = 0
-        appointments = {}
+        appointments = []
         # format json data
         for result in results:
             print(result)
-            counter += 1
             appointment = {}
             appointment["student_id"] = result[1]
             appointment["start_time"] = result[2]
@@ -347,11 +345,10 @@ def retrive_students_dashboard():
             appointment["student_first_name"] = result[6]
             appointment["student_last_name"] = result[7]
             appointment["student_phone"] = result[8]
-            appointments["appointment" + str(counter)] = appointment
+            appointments.append(appointment)
         
 
         return appointments, 200
-
 
 
 
@@ -372,41 +369,14 @@ def favorite():
     #get list of a student's favorite tutors
     if request.method == 'GET':
 
-        #req = request.get_json()
-        netid = session["net_id"].upper()
+        req = request.get_json()
+        netid = req["netid"]
 
-        select_favorites = f"SELECT first_name, last_name, minutes_tutored, phone, email, about_me, profile_pic, Tutor.tutor_id FROM Favorites, Tutor, Student WHERE student_id = %s AND Tutor.tutor_id = Favorites.tutor_id AND Tutor.tutor_id = Student.tutor_id"
-        select_subjects = f"SELECT S.subject, T.tutor_id FROM Subjects S, Tutor T WHERE T.tutor_id = S.tutor_id"
-        print("Hello")
+        select_favorites = f"SELECT first_name, last_name, phone, email, about_me FROM Favorites, Tutor, Student WHERE student_id = %s AND Tutor.tutor_id = Favorites.tutor_id AND Tutor.tutor_id = Student.tutor_id"
         cursor.execute(select_favorites, (netid,))
-        results = cursor.fetchall()
-        counter = 0
-        Tutors = []
-        # format json data
-        for result in results:
-            counter += 1
-            tutor = {}
-            tutor["first_name"] = result[0]
-            tutor["last_name"] = result[1]
-            tutor["minutes_tutored"] = result[2]
-            tutor["phone"] = result[3]
-            tutor["email"] = result[4]
-            tutor["about_me"] = result[5]
-            tutor["profile_pic"] = result[6]
-            tutor["tutor_id"] = result[7]
-            tutor["subjects"] = []
-            Tutors.append(tutor)
-        
-        cursor.execute(select_subjects)
-        result_ = cursor.fetchall()
-        print(result_)
-        for result in result_:
-            for tutor in Tutors:
-                if tutor["tutor_id"] == result[1]:
-                    tutor["subjects"].append(result[0])
-                  
-        return Tutors
-        
+        result = cursor.fetchall()
+        return jsonify(result)
+    
 @app.route('/update')
 def update():
     update = f"UPDATE Student SET first_name = %s, last_name = %s WHERE netid = %s"
@@ -517,21 +487,93 @@ def availability():
         current_availability = f"SELECT * FROM Availability"
         cursor.execute(current_availability)
         results = cursor.fetchall()
-        counter = 0
-        availabilitys = {}
+        availabilitys = []
         # format json data
         for result in results:
             print(result)
-            counter += 1
             availability = {}
             availability["tutor_id"] = result[0]
             availability["start_time"] = result[1]
             availability["end_time"] = result[2]
-            availabilitys["availability" + str(counter)] = availability
+            availabilitys.append(availability)
         
         return availabilitys, 200
 
+@app.route('/profile/<IsTutor>', methods=["GET"])
+def student_profile(IsTutor):
+    if request.method == 'GET':
+        student_id = session["net_id"].upper()
+        if IsTutor == "False":     
+            get_student_profile = f"SELECT * FROM Student WHERE netid = %s"
+            cursor.execute(get_student_profile, (student_id,))
+            student_info = cursor.fetchall()
+            profile = []
+            info = {}
+            info["student_id"] = student_info[0][0]
+            info["first_name"] = student_info[0][1]
+            info["last_name"] = student_info[0][2]
+            info["phone"] = student_info[0][3]
+            info["email"] = student_info[0][4]
+            info["minutes_tutored"] = student_info[0][6]
+            profile.append(info)
+            
+            return profile, 200
+        else:
+            get_tutor_id = f"SELECT tutor_id FROM Student WHERE netid = %s"
+            cursor.execute(get_tutor_id, (student_id,))
+            results = cursor.fetchall()
+            tutor_id = results[0][0]
 
+            tutor_profile = f"SELECT first_name, last_name, minutes_tutored, phone, email, about_me, profile_pic, Tutor.tutor_id, netid FROM Tutor, Student WHERE Student.tutor_id = %s AND Tutor.tutor_id = Student.tutor_id"
+            tutor_subjects = f"SELECT subject FROM Subjects WHERE tutor_id = %s"
+
+            cursor.execute(tutor_profile, (tutor_id,))
+            result = cursor.fetchall()
+            Tutors = []
+            tutor = {}
+            tutor["first_name"] = result[0][0]
+            tutor["last_name"] = result[0][1]
+            tutor["minutes_tutored"] = result[0][2]
+            tutor["phone"] = result[0][3]
+            tutor["email"] = result[0][4]
+            tutor["about_me"] = result[0][5]
+            tutor["profile_pic"] = result[0][6]
+            tutor["tutor_id"] = result[0][7]
+            tutor["student_id"] = result[0][8]
+            tutor["subjects"] = []
+            Tutors.append(tutor)
+
+            cursor.execute(tutor_subjects,(tutor_id,))
+            results = cursor.fetchall()
+            for result in results:
+                Tutors[0]["subjects"].append(result[0])
+            
+            return Tutors
+
+
+@app.route('/student-appointment-info', methods=["GET"])
+def student_appointment_info():
+    if request.method == 'GET':
+        student_id = session["net_id"].upper()
+        
+        get_student_appointments = f"SELECT A.start_time, A.end_time, S.first_name, S.last_name, S.phone, S.email, S.minutes_tutored "\
+                                    f"FROM Appointments A, Student S WHERE A.student_id = %s AND A.tutor_id = S.tutor_id"
+        cursor.execute(get_student_appointments, (student_id,))
+        results = cursor.fetchall()
+        
+        appointments = []
+        for result in results:
+            appointment = {}
+            appointment["start_time"] = result[0]
+            appointment["end_time"] = result[1]
+            appointment["tutor_first_name"] = result[2]
+            appointment["tutor_last_name"] = result[3]
+            appointment["tutor_phone"] = result[4]
+            appointment["tutor_email"] = result[5]
+            appointment["tutor_minutes_tutored"] = result[6]
+            appointments.append(appointment)
+        
+        return appointments, 200
 
 if __name__ == '__main__':
     app.run(debug = True)
