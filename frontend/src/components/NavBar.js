@@ -143,7 +143,7 @@ const NavBar = ({ title }) => {
                     <ListItemText primary="Tutors"/>
                   </ListItemButton>
                 </ListItem>
-                <ListItem key="Favorite Tutors" disablePadding>
+                <ListItem key="Favorite Tutors" disablePadding onClick={() => (navigate("/FavoriteTutors"))}>
                   <ListItemButton>
                     <ListItemIcon>
                     <FavoriteIcon /> 

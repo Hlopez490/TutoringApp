@@ -364,18 +364,40 @@ def favorite():
 
         cursor.execute(insert_new_favorite, (tutor_id, netid))
         db.commit()
-        return jsonify({"msg" : "Successful"})
+        return {"msg" : "Successful"}, 200
     
     #get list of a student's favorite tutors
     if request.method == 'GET':
+        netid = session["net_id"].upper()
 
-        req = request.get_json()
-        netid = req["netid"]
-
-        select_favorites = f"SELECT first_name, last_name, phone, email, about_me FROM Favorites, Tutor, Student WHERE student_id = %s AND Tutor.tutor_id = Favorites.tutor_id AND Tutor.tutor_id = Student.tutor_id"
+        select_favorites = f"SELECT first_name, last_name, phone, email, about_me, T.tutor_id, T.profile_pic, minutes_tutored FROM Favorites F, Tutor T, Student S WHERE F.student_id = %s AND T.tutor_id = F.tutor_id AND T.tutor_id = S.tutor_id"
+        select_subjects = f"SELECT S.subject, T.tutor_id FROM Subjects S, Tutor T WHERE T.tutor_id = S.tutor_id"
         cursor.execute(select_favorites, (netid,))
-        result = cursor.fetchall()
-        return jsonify(result)
+        results = cursor.fetchall()
+        Tutors = []
+        for result in results:
+            tutor = {}
+            tutor["first_name"] = result[0]
+            tutor["last_name"] = result[1]
+            tutor["phone"] = result[2]
+            tutor["email"] = result[3]
+            tutor["about_me"] = result[4]
+            tutor["tutor_id"] = result[5]
+            tutor["profile_pic"] = result[6]
+            tutor["minutes_tutored"] = result[7]
+            tutor["subjects"] = []
+            Tutors.append(tutor)
+        
+        cursor.execute(select_subjects)
+        result_ = cursor.fetchall()
+
+        for result in result_:
+            for tutor in Tutors:
+                if tutor["tutor_id"] == result[1]:
+                    tutor["subjects"].append(result[0])
+        
+        print(Tutors)
+        return Tutors, 200
     
 @app.route('/update')
 def update():
@@ -395,11 +417,9 @@ def tutorList():
         select_subjects = f"SELECT S.subject, T.tutor_id FROM Subjects S, Tutor T WHERE T.tutor_id = S.tutor_id"
         cursor.execute(select_tutors)
         results = cursor.fetchall()
-        counter = 0
         Tutors = []
         # format json data
         for result in results:
-            counter += 1
             tutor = {}
             tutor["first_name"] = result[0]
             tutor["last_name"] = result[1]
@@ -548,7 +568,7 @@ def student_profile(IsTutor):
             for result in results:
                 Tutors[0]["subjects"].append(result[0])
             
-            return Tutors
+            return Tutors, 200
 
 
 @app.route('/student-appointment-info', methods=["GET"])
