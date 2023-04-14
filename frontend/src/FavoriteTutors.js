@@ -76,7 +76,7 @@ const FavoriteTutors = () => {
             <em>none</em>
           </MenuItem>
           <MenuItem value={"ADVANCED ALGORITHM"}>ADVANCED ALGORITHM</MenuItem>
-          <MenuItem value={"ARTIFICIAL INTELLIGENCE"}>ARTIFICIAL INTELLIGENCE</MenuItem>
+          <MenuItem value={"\tARTIFICIAL INTELLIGENCE"}>ARTIFICIAL INTELLIGENCE</MenuItem>
           <MenuItem value={"COMPUTER ARCHITECTURE"}>COMPUTER ARCHITECTURE</MenuItem>
           <MenuItem value={"COMPUTER NETWORKS"}>COMPUTER NETWORKS</MenuItem>
           <MenuItem value={"CS1"}>CS1</MenuItem>
@@ -91,7 +91,7 @@ const FavoriteTutors = () => {
             </div>
             </Container>
         {tutors && <TutorList tutors={tutors.filter((asd) => 
-        (asd.subjects.includes(subject) || asd.subjects[1].includes(subject)) && (asd.first_name.toLowerCase().includes(search) || asd.last_name.toLowerCase().includes(search)) 
+        (asd.subjects.includes(subject) || asd.subjects[1].includes(subject)) && (asd.first_name.toLowerCase().includes(search) || asd.last_name.toLowerCase().includes(search) || [asd.last_name.toLowerCase(), " ", asd.first_name.toLowerCase()].join("").includes(search) || [asd.first_name.toLowerCase(), " ", asd.last_name.toLowerCase()].join("").includes(search))
        )} />}
       </div>
     );
