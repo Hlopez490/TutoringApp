@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
+import Calendar from "./components/Calendar";
+
+
 const Dashboard = () => {
     const [authenticated, setauthenticated] = useState(null);
     useEffect(() => {
@@ -22,6 +25,7 @@ const Dashboard = () => {
         return (
             <div>
                 <NavBar title ="Dashboard" />
+                <Calendar/>
                 <p>Welcome to your Dashboard</p>
             </div>
             );
