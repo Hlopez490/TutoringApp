@@ -457,9 +457,9 @@ def availability():
         cursor.execute(get_tutor_id, (student_id,))
         results = cursor.fetchall()
         tutor_id = results[0][0]
-
+        print(tutor_id)
         current_availability = f"SELECT start_time, end_time FROM Availability WHERE tutor_id = %s"
-        insert_available = f'INSERT INTO Availability (tutor_id, start_time, end_time) VALUES (%s, %s, %s, %s)'
+        insert_available = f'INSERT INTO Availability (tutor_id, start_time, end_time) VALUES (%s, %s, %s)'
         # Check if a student has booked a past time appointment
 
         current_datetime = datetime.datetime.now()
@@ -474,7 +474,7 @@ def availability():
             return {"msg": "can't assign pass time availability"}, 400
         
     
-        # check if the appointment time is conflicting with student's current appointment
+        # check if the appointment time is conflicting with tutor's current appointment
         cursor.execute(current_availability, (tutor_id, ))
         result = cursor.fetchall()
         
