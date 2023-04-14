@@ -269,7 +269,7 @@ def make_appointment(tutor_id):
 @app.route('/dashboard/<tutor_id>/<start_time>/<end_time>', methods=['DELETE'])
 def delete_appointment(tutor_id, start_time, end_time):
     if request.method == 'DELETE':
-        student_id = session["net_id"]
+        student_id = session["net_id"].upper()
 
         update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s" \
                                 f"WHERE netid = %s"
@@ -443,7 +443,7 @@ def tutorList():
         return Tutors, 200
 
 
-@app.route('/availability', methods=['POST', 'GET'])
+@app.route('/availability', methods=['POST'])
 def availability():
     if request.method == 'POST':
         req = request.get_json()
@@ -503,9 +503,12 @@ def availability():
         
         return {"msg": "New Availability Scheduled !!"}, 200
 
-    elif request.method == 'GET':
-        current_availability = f"SELECT * FROM Availability"
-        cursor.execute(current_availability)
+
+@app.route('/availability/<Tutor_id>', methods=['GET'])
+def availabilit(Tutor_id):
+    if request.method == 'GET':
+        current_availability = f"SELECT * FROM Availability Where tutor_id = %s"
+        cursor.execute(current_availability, (Tutor_id,))
         results = cursor.fetchall()
         availabilitys = []
         # format json data
@@ -518,6 +521,7 @@ def availability():
             availabilitys.append(availability)
         
         return availabilitys, 200
+
 
 @app.route('/profile/<IsTutor>', methods=["GET"])
 def student_profile(IsTutor):
