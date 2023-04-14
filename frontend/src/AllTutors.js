@@ -76,7 +76,7 @@ const AllTutors = () => {
             <em>none</em>
           </MenuItem>
           <MenuItem value={"ADVANCED ALGORITHM"}>ADVANCED ALGORITHM</MenuItem>
-          <MenuItem value={"ARTIFICIAL INTELLIGENCE"}>ARTIFICIAL INTELLIGENCE</MenuItem>
+          <MenuItem value={"\tARTIFICIAL INTELLIGENCE"}>ARTIFICIAL INTELLIGENCE</MenuItem>
           <MenuItem value={"COMPUTER ARCHITECTURE"}>COMPUTER ARCHITECTURE</MenuItem>
           <MenuItem value={"COMPUTER NETWORKS"}>COMPUTER NETWORKS</MenuItem>
           <MenuItem value={"CS1"}>CS1</MenuItem>
