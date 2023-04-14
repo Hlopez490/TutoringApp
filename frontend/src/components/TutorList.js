@@ -20,13 +20,23 @@ import Container from '@mui/material/Container';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from "react";
-
+import MakeAppointment from '../MakeAppointment';
 
 
 
 const TutorList = ({ tutors }) => {
     useEffect(() => {
     }, [tutors]);
+    const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
     return (
         
       <div className="blog-list">
@@ -64,17 +74,21 @@ const TutorList = ({ tutors }) => {
                 <IconButton aria-label="add to favorites">
                     <FavoriteIcon />
                 </IconButton>
-                <Button size="small">Book Appointment</Button>
+                <Button size="small" onClick={handleClickOpen}>Book Appointment</Button>
             </CardActions>
+            
           </Card>
           
-       
+          <MakeAppointment tutor = { tutor } open = { open } handleClose=  {handleClose }/>
           </div>
           </Grid>
+         
         ))}
        </Grid>
        </Container>
+       
       </div>
+      
       
       
     );
