@@ -411,12 +411,20 @@ def update():
        
 @app.route('/tutorList', methods=["GET"])
 def tutorList(): 
-    #get list of all tutors
+    # get list of all tutors
     if request.method == 'GET':
+        netid = session["net_id"].upper()
+
         select_tutors = f"SELECT first_name, last_name, minutes_tutored, phone, email, about_me, profile_pic, Tutor.tutor_id FROM Tutor, Student WHERE Tutor.tutor_id = Student.tutor_id"
         select_subjects = f"SELECT S.subject, T.tutor_id FROM Subjects S, Tutor T WHERE T.tutor_id = S.tutor_id"
+        select_favorites = f"SELECT tutor_id FROM Favorites WHERE student_id = %s"
+
         cursor.execute(select_tutors)
         results = cursor.fetchall()
+
+        cursor.execute(select_favorites,(netid,))
+        favorites = cursor.fetchall()
+
         Tutors = []
         # format json data
         for result in results:
@@ -430,6 +438,12 @@ def tutorList():
             tutor["profile_pic"] = result[6]
             tutor["tutor_id"] = result[7]
             tutor["subjects"] = []
+            tutor["IsFavorite"] = False
+            for fav in favorites:
+                if fav[0] == result[7]:
+                    tutor["IsFavorite"] = True
+                    break
+
             Tutors.append(tutor)
         
         cursor.execute(select_subjects)
