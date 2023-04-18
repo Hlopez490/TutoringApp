@@ -28,8 +28,10 @@ const TutorList = ({ tutors }) => {
     useEffect(() => {
     }, [tutors]);
     const [open, setOpen] = React.useState(false);
+    const [tutorP, setTutorP] = React.useState("");
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (tutor) => {
+    setTutorP(tutor); 
     setOpen(true);
   };
 
@@ -74,12 +76,12 @@ const TutorList = ({ tutors }) => {
                 <IconButton aria-label="add to favorites">
                     <FavoriteIcon />
                 </IconButton>
-                <Button size="small" onClick={handleClickOpen}>Book Appointment</Button>
+                <Button size="small" onClick={() =>handleClickOpen(tutor)}>Book Appointment</Button>
             </CardActions>
             
           </Card>
           
-          <MakeAppointment tutor = { tutor } open = { open } handleClose=  {handleClose }/>
+          <MakeAppointment tutor = { tutorP } open = { open } handleClose=  {handleClose }/>
           </div>
           </Grid>
          
