@@ -35,9 +35,17 @@ function fakeFetch(date, { signal }) {
     const timeout = setTimeout(() => {
         console.log(d)
       const daysInMonth = new Date(date).getMonth();
-      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth)); // (data.filter((asd) => new Date(asd.start_time) === daysInMonth)).start_time;
+      let daysToHighlight1 = d.filter((asd) => new Date (asd.start_time).getMonth() === daysInMonth);
+      console.log(daysToHighlight1);
+      let daysToHighlight2 = daysToHighlight1.map(dates => (new Date(dates.start_time).getDate()))
+      daysToHighlight2.unshift(0); 
+      const daysToHighlight = daysToHighlight2
+       // (data.filter((asd) => new Date(asd.start_time) === daysInMonth)).start_time;
       console.log(daysToHighlight); 
 
+      //const daysInMonth = date.daysInMonth();
+      //const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
+      //console.log("Days to Highlight: " + daysToHighlight)
       resolve({ daysToHighlight });
     }, 500);
 
