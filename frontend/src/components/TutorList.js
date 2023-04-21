@@ -21,10 +21,11 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from "react";
 import MakeAppointment from '../MakeAppointment';
-
+import { useNavigate } from "react-router-dom";
 
 
 const TutorList = ({ tutors }) => {
+  const navigate = useNavigate();
     useEffect(() => {
     }, [tutors]);
     const [open, setOpen] = React.useState(false);
@@ -33,6 +34,13 @@ const TutorList = ({ tutors }) => {
   const handleClickOpen = (tutor) => {
     setTutorP(tutor); 
     setOpen(true);
+    console.log(tutor)
+    navigate("/makeAppointment", {
+      state: {
+        tutorS: tutor
+      }
+    }); 
+    
   };
 
   const handleClose = () => {
@@ -81,7 +89,6 @@ const TutorList = ({ tutors }) => {
             
           </Card>
           
-          <MakeAppointment tutor = { tutorP } open = { open } handleClose=  {handleClose }/>
           </div>
           </Grid>
          

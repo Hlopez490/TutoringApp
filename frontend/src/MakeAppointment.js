@@ -1,49 +1,44 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
-const MakeAppointment = (props) => {
 
-  const [appointments, setAppointments] = useState(null); 
+const MakeAppointment = () => {
 
-    useEffect(() => {
-    }, [props.open]);
+  const [appointments, setAppointments] = useState(null)
 
-    useEffect(() => {
-      fetch('/availability/' +  props.tutor.tutor_id , {
-          method: 'GET'
-      
-        })
-        .then(res => {
-          return res.json();
-        })
-        .then(data => {
-          setAppointments(data);
-          console.log(data); 
-        })
-    }, []);
+  const location = useLocation();
+  useEffect(() => {
+    fetch('/availability/' +  location.state.tutorS.tutor_id , {
+        method: 'GET'
+    
+      })
+      .then(res => {
+        return res.json();
+      })
+      .then(data => {
+        setAppointments(data);
+        console.log(data); 
+      })
+  }, []);
+
+  console.log(location);
+  
     
     return (
         <div>
-        <Dialog open={props.open}>
-        <DialogTitle>Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {props.tutor.tutor_id}
-          </DialogContentText>
-        
-         </DialogContent>
-        <DialogActions>
-          <Button onClick={props.handleClose}>Cancel</Button>
-          <Button onClick={props.handleClose}>Create Appointment</Button>
-        </DialogActions>
-      </Dialog>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoContainer components={['DatePicker']}>
+        <DatePicker label="Basic date picker" />
+      </DemoContainer>
+    </LocalizationProvider>
+          {location.state.tutorS.tutor_id}
+
+          {appointments && <h1> {new Date(appointments[1].start_time).getDate()} </h1> }
         </div>
        
     );
