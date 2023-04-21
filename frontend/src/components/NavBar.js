@@ -23,6 +23,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from "react-router-dom";
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 const drawerWidth = 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -161,6 +162,14 @@ const NavBar = ({ title }) => {
                     <AccountCircleIcon /> 
                     </ListItemIcon>
                     <ListItemText primary="Profile"/>
+                  </ListItemButton>
+                </ListItem>
+                <ListItem key="Register_Tutor" disablePadding>
+                  <ListItemButton>
+                    <ListItemIcon>
+                    <HowToRegIcon /> 
+                    </ListItemIcon>
+                    <ListItemText primary="Register Tutor"/>
                   </ListItemButton>
                 </ListItem>
             </List>
