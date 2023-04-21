@@ -10,8 +10,24 @@ import { useEffect, useState } from "react";
 
 const MakeAppointment = (props) => {
 
+  const [appointments, setAppointments] = useState(null); 
+
     useEffect(() => {
     }, [props.open]);
+
+    useEffect(() => {
+      fetch('/availability/' +  props.tutor.tutor_id , {
+          method: 'GET'
+      
+        })
+        .then(res => {
+          return res.json();
+        })
+        .then(data => {
+          setAppointments(data);
+          console.log(data); 
+        })
+    }, []);
     
     return (
         <div>
