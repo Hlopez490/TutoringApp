@@ -32,6 +32,8 @@ function fakeFetch(date, { signal }) {
   });
 }
 
+const initialValue = dayjs('2022-04-17');
+
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
 
