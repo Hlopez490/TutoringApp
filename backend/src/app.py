@@ -201,9 +201,11 @@ def make_appointment(tutor_id):
         delete_availability = f"DELETE FROM Availability WHERE tutor_id = %s" \
                                 f"AND start_time = %s AND end_time = %s"
         
-        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored + %s WHERE netid = %s"
+        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored + %s" \
+                                f"WHERE netid = %s"
         
-        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored + %s WHERE tutor_id = %s"
+        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored + %s" \
+                            f"WHERE tutor_id = %s"
         
         # Check if a student has booked a past time appointment
         current_datetime = datetime.datetime.now()
@@ -242,7 +244,6 @@ def make_appointment(tutor_id):
                     return {"msg":"appointment time conflict"}, 400
                 
         minutessince = int((end_time_datetime - start_time_datetime).total_seconds() / 60)
-        print(f"this is minute {minutessince}")
 
         # book an appointment
         cursor.execute(insert_new_appointment, (tutor_id, student_id, start_time, end_time, subject))
@@ -351,7 +352,7 @@ def retrive_students_dashboard():
 
 
 
-@app.route('/favorites', methods=['POST', "GET", "DELETE"])
+@app.route('/favorites', methods=['POST', "GET"])
 def favorite(): 
     #Method to add someone to a students favorite list
     if request.method == 'POST':
@@ -397,18 +398,6 @@ def favorite():
         
         print(Tutors)
         return Tutors, 200
-    if request.method == 'DELETE':
-        req = request.get_json()
-        netid = session["net_id"].upper()
-        tutor_id = req["tutor_id"]
-
-        delete_tutor = f"DELETE From Favorites WHERE student_id = %s AND tutor_id = %s"
-
-        cursor.execute(delete_tutor, (netid, tutor_id))
-        db.commit()
-        return {"msg" : "Delete Successful"}, 200
-
-        
     
 @app.route('/update')
 def update():
