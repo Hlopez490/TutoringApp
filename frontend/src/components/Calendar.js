@@ -7,6 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import { arrayIncludes } from '@mui/x-date-pickers/internals/utils/utils';
 
 function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
@@ -17,10 +18,25 @@ function getRandomNumber(min, max) {
  * ⚠️ No IE11 support
  */
 function fakeFetch(date, { signal }) {
+    let d; 
+    fetch('/student-appointment-info' , {
+        method: 'GET'
+      })
+      .then(res => {
+        return res.json();
+      })
+      .then(data => { 
+        d = data; 
+        //console.log(data); 
+      })
+    
+    
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
-      const daysInMonth = date.daysInMonth();
-      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
+        console.log(d)
+      const daysInMonth = new Date(date).getMonth();
+      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth)); // (data.filter((asd) => new Date(asd.start_time) === daysInMonth)).start_time;
+      console.log(daysToHighlight); 
 
       resolve({ daysToHighlight });
     }, 500);
