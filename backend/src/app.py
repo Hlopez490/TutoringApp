@@ -242,7 +242,6 @@ def make_appointment(tutor_id):
                     return {"msg":"appointment time conflict"}, 400
                 
         minutessince = int((end_time_datetime - start_time_datetime).total_seconds() / 60)
-        print(f"this is minute {minutessince}")
 
         # book an appointment
         cursor.execute(insert_new_appointment, (tutor_id, student_id, start_time, end_time, subject))
@@ -358,8 +357,13 @@ def favorite():
         req = request.get_json()
         netid = session["net_id"].upper()
         tutor_id = req["tutor_id"]
-        insert_new_favorite = f"INSERT INTO Favorites (tutor_id, student_id) VALUES" \
+        select_favorite = f"SELECT * FROM Favorites WHERE tutor_id = % AND students_id = %"
+        insert_new_favorite = f"INSERT INTO Favorites (tutor_id, student_id) VALUES " \
             f"(%s,%s)"
+        cursor.execute(select_favorite, (tutor_id, netid))
+        results = cursor.fetchall()
+        if len(result) > 0:
+            return {"msg": "tutor already in favorite list."}, 400
 
         cursor.execute(insert_new_favorite, (tutor_id, netid))
         db.commit()
@@ -397,18 +401,19 @@ def favorite():
         
         print(Tutors)
         return Tutors, 200
-    if request.method == 'DELETE':
+    
+    if request.method == "DELETE":
         req = request.get_json()
         netid = session["net_id"].upper()
         tutor_id = req["tutor_id"]
 
-        delete_tutor = f"DELETE From Favorites WHERE student_id = %s AND tutor_id = %s"
-
-        cursor.execute(delete_tutor, (netid, tutor_id))
+        Delete_tutor = f"DELETE FROM Favorites WHERE tutor_id = %s AND user_id = %s"
+        cursor.execute(Delete_tutor, (tutor_id, netid))
         db.commit()
-        return {"msg" : "Delete Successful"}, 200
+        return {"msg": "Successfully deleted"}, 200
 
-        
+
+
     
 @app.route('/update')
 def update():
