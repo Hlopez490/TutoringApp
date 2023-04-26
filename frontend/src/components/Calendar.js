@@ -47,7 +47,7 @@ function fakeFetch(date, { signal }) {
       //const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
       //console.log("Days to Highlight: " + daysToHighlight)
       resolve({ daysToHighlight });
-    }, 500);
+    }, 1000);
 
     signal.onabort = () => {
       clearTimeout(timeout);

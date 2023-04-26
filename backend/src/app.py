@@ -189,7 +189,12 @@ def make_appointment(tutor_id):
         start_time = req["start_time"]
         end_time = req["end_time"]
         subject = req["subject"].upper()
-        
+        months = {"Jan": "01", "Feb": "02", "Mar":"03", "Apr":"04", "May":"05", "Jun":"06", "Jul":"07", "Aug":"08", "Sep":"09", "Oct":"10", "Nov":"11", "Dec":"12"}
+        temp = start_time.split()
+        start_time = f"{temp[3]}-{months[temp[2]]}-{temp[1]} {temp[4]}"
+
+        temp = end_time.split()
+        end_time = f"{temp[3]}-{months[temp[2]]}-{temp[1]} {temp[4]}"
 
         #insert into Appointments table 
         insert_new_appointment = f"INSERT INTO Appointments (tutor_id, student_id, start_time, end_time, subject) VALUES" \
