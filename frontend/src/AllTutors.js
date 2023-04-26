@@ -90,7 +90,7 @@ const AllTutors = () => {
         </FormControl>
             </div>
             </Container>
-        {tutors && <TutorList tutors={tutors.filter((asd) => 
+        {tutors && <TutorList fav ={false} tutors={tutors.filter((asd) => 
         (asd.subjects.includes(subject) || asd.subjects[1].includes(subject)) 
         && (asd.first_name.toLowerCase().includes(search) 
         || asd.last_name.toLowerCase().includes(search)

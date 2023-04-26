@@ -21,10 +21,12 @@ import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { useEffect, useState } from "react";
 import MakeAppointment from '../MakeAppointment';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
+import { Delete } from '@mui/icons-material';
 
 
-const TutorList = ({ tutors }) => {
+const TutorList = ({ tutors, fav }) => {
   const navigate = useNavigate();
     useEffect(() => {
     }, [tutors]);
@@ -81,9 +83,9 @@ const TutorList = ({ tutors }) => {
               </Typography>
             </CardContent>
             <CardActions>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                </IconButton>
+                {fav && <IconButton aria-label="add to favorites">
+                    <DeleteIcon />
+                </IconButton>}
                 <Button size="small" onClick={() =>handleClickOpen(tutor)}>Book Appointment</Button>
             </CardActions>
             
