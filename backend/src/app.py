@@ -189,6 +189,7 @@ def make_appointment(tutor_id):
         start_time = req["start_time"]
         end_time = req["end_time"]
         subject = req["subject"].upper()
+        
 
         #insert into Appointments table 
         insert_new_appointment = f"INSERT INTO Appointments (tutor_id, student_id, start_time, end_time, subject) VALUES" \

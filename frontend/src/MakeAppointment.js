@@ -114,7 +114,7 @@ const MakeAppointment = () => {
 
 
       <div style={{alignItems: "center"}}>
-      {subject && value && appointments && <AppointmentList appointments ={appointments.filter ((asd) =>
+      {subject && value && appointments && <AppointmentList subject ={subject} tutor ={location.state.tutorS}  appointments ={appointments.filter ((asd) =>
          new Date (asd.start_time).getDate() === (new Date(value).getDate()) && 
          new Date (asd.start_time).getMonth() === (new Date(value).getMonth()) &&
          new Date (asd.start_time).getYear() === (new Date(value).getYear()) 
