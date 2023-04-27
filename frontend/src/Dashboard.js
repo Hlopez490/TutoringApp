@@ -5,28 +5,46 @@ import Calendar from "./components/Calendar";
 
 
 const Dashboard = () => {
+
     const [authenticated, setauthenticated] = useState(null);
+    const [appointments, setAppointments] = useState(['']);
+
     useEffect(() => {
-    const loggedInUser = localStorage.getItem("authenticated");
-    console.log(loggedInUser)
-    if (loggedInUser) {
-    setauthenticated(loggedInUser);
-    }
+        const loggedInUser = localStorage.getItem("authenticated");
+        console.log(loggedInUser)
+        if (loggedInUser) {
+            setauthenticated(loggedInUser);
+        }
+
+        fetch('/student-appointment-info' , {
+            method: 'GET'
+          })
+          .then(res => {
+            return res.json();
+          })
+          .then(data => { 
+            setAppointments(data);
+          })
+
     }, []);
+
     //Routing back if no authentication
     if (!localStorage.getItem("authenticated")) {
         console.log("I'm Here1")
         return <Navigate replace to="/" />;
-
     } 
     
     //if authentification actually happened
     else {
+    
+        let daysToHighlight = appointments.map(dates => (new Date(dates.start_time).toDateString()))
+        console.log(daysToHighlight);
+
         return (
             <div>
                 <NavBar title ="Dashboard" />
                 <Calendar />
-                <p>Welcome to your Dashboard</p>
+                <p> Days:: {daysToHighlight} || </p>
             </div>
             );
     }
