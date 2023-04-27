@@ -561,25 +561,28 @@ def availabilit(Tutor_id):
         return availabilitys, 200
 
 
-@app.route('/profile/<IsTutor>', methods=["GET"])
-def student_profile(IsTutor):
+@app.route('/profile', methods=["GET"])
+def student_profile():
     if request.method == 'GET':
         student_id = session["net_id"].upper()
-        if IsTutor == "False":     
-            get_student_profile = f"SELECT * FROM Student WHERE netid = %s"
-            cursor.execute(get_student_profile, (student_id,))
-            student_info = cursor.fetchall()
-            profile = []
-            info = {}
-            info["student_id"] = student_info[0][0]
-            info["first_name"] = student_info[0][1]
-            info["last_name"] = student_info[0][2]
-            info["phone"] = student_info[0][3]
-            info["email"] = student_info[0][4]
-            info["minutes_tutored"] = student_info[0][6]
+        
+        get_student_profile = f"SELECT * FROM Student WHERE netid = %s"
+        cursor.execute(get_student_profile, (student_id,))
+        student_info = cursor.fetchall()
+        profile = []
+        info = {}
+        info["student_id"] = student_info[0][0]
+        info["first_name"] = student_info[0][1]
+        info["last_name"] = student_info[0][2]
+        info["phone"] = student_info[0][3]
+        info["email"] = student_info[0][4]
+        info["minutes_tutored"] = student_info[0][6]
+        
+        if student_info[0][7] == "None":
+            info["IsTutor"] = False
             profile.append(info)
-            
             return profile, 200
+        
         else:
             get_tutor_id = f"SELECT tutor_id FROM Student WHERE netid = %s"
             cursor.execute(get_tutor_id, (student_id,))
@@ -602,6 +605,7 @@ def student_profile(IsTutor):
             tutor["profile_pic"] = result[0][6]
             tutor["tutor_id"] = result[0][7]
             tutor["student_id"] = result[0][8]
+            tutor["IsTutor"] = True
             tutor["subjects"] = []
             Tutors.append(tutor)
 
