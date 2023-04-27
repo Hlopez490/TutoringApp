@@ -90,7 +90,7 @@ const AppointmentList = ({ appointments, tutor, subject }) => {
                     </div>
                 )) }
             </Stack>
-
+            <br/>
             {error?<Alert severity="error">{error}</Alert>:null} 
 
 

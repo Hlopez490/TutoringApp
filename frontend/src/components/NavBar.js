@@ -156,20 +156,12 @@ const NavBar = ({ title }) => {
             </List>
             <Divider />
             <List>
-            <ListItem key="Profile" disablePadding>
+            <ListItem key="Profile" disablePadding onClick={() => (navigate("/profile"))}>
                   <ListItemButton>
                     <ListItemIcon>
                     <AccountCircleIcon /> 
                     </ListItemIcon>
                     <ListItemText primary="Profile"/>
-                  </ListItemButton>
-                </ListItem>
-                <ListItem key="Register_Tutor" disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                    <HowToRegIcon /> 
-                    </ListItemIcon>
-                    <ListItemText primary="Register Tutor"/>
                   </ListItemButton>
                 </ListItem>
             </List>

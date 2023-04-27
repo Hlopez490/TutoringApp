@@ -24,6 +24,7 @@ import MakeAppointment from '../MakeAppointment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
 import { Delete } from '@mui/icons-material';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 
 import Dialog from '@mui/material/Dialog';
@@ -32,20 +33,26 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import Alert from '@mui/material/Alert';
+
+
 
 const TutorList = ({ tutors, fav }) => {
   const navigate = useNavigate();
     useEffect(() => {
     }, [tutors]);
     const [open, setOpen] = React.useState(false);
+    const [favOpen, setFavOpen] = React.useState(false);
     const [tutorP, setTutorP] = React.useState("");
+    const [error, setError] = useState(null)
+    const [isWarning, setIsWarning] = useState(false)
 
+    //handling the deletion
     const handleSubmit = (event) => {
       event.preventDefault();
       const data = new FormData();
       data.append("tutor_id", tutorP.tutor_id)
 
-  
   
   
       const value = Object.fromEntries(data.entries());
@@ -70,6 +77,52 @@ const TutorList = ({ tutors, fav }) => {
       
     };
 
+
+
+
+    //handling adding tutors to favorites
+    const handleAddFavorite = (event) => {
+      event.preventDefault();
+      const data = new FormData();
+      data.append("tutor_id", tutorP.tutor_id)
+
+  
+  
+      const value = Object.fromEntries(data.entries());
+  
+      fetch('/favorites', {
+        method: 'POST',
+        headers: {
+          'Content-type': "application/json",
+        },
+        body: JSON.stringify(value),
+      })
+      .then(response => {
+        //console.log(request)        
+        if (response.ok) {
+            navigate("/dashboard");
+            return response.json();
+          } else {
+             throw new Error('Already in favorites');
+          }
+     })
+      .then((data) => console.log(data))
+      .catch(err => {
+        console.log(err.message);
+        setError(err.message); 
+        setIsWarning(true); 
+        setFavOpen(false); 
+    });
+      
+    };
+
+
+
+
+
+
+
+
   const handleClickOpen = (tutor) => {
     setTutorP(tutor); 
     setOpen(true);
@@ -82,12 +135,24 @@ const TutorList = ({ tutors, fav }) => {
     
   };
 
+  //opens remove confirmation
   const handleDialogOpen = (tutor) => {
     setTutorP(tutor); 
     setOpen(true);
     
   };
 
+  //function to open conformation for adding to favrite
+  const handleAddFavoriteDiaglogOpen = (tutor) => {
+    setTutorP(tutor); 
+    setFavOpen(true)
+  }
+
+  //closes adding favorite confirmation
+  const handleAddFavoriteDiaglogClose = (tutor) => { 
+    setFavOpen(false)
+  }
+  //closes remove confirmation
   const handleClose = () => {
     setOpen(false);
   };
@@ -95,6 +160,8 @@ const TutorList = ({ tutors, fav }) => {
     return (
         
       <div className="blog-list">
+                    {error?<Alert severity="error">{error}</Alert>:null} 
+
         <Container sx = {{py: 8}} maxWidth ="md" columnSpacing={1}>
         <Grid container rowSpacing={2} columnSpacing={1}>
         {tutors.map(tutor => (
@@ -128,6 +195,9 @@ const TutorList = ({ tutors, fav }) => {
             <CardActions>
                 {fav && <IconButton onClick={() =>handleDialogOpen(tutor)} aria-label="add to favorites">
                     <DeleteIcon />
+                </IconButton>}
+                {!fav && <IconButton  onClick={() =>handleAddFavoriteDiaglogOpen(tutor)} aria-label="add to favorites">
+                    <PersonAddIcon />
                 </IconButton>}
                 <Button size="small" onClick={() =>handleClickOpen(tutor)}>Book Appointment</Button>
             </CardActions>
@@ -163,6 +233,30 @@ const TutorList = ({ tutors, fav }) => {
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button onClick={handleSubmit} autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+        
+      <Dialog
+        open={favOpen}
+        onClose={handleAddFavoriteDiaglogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Click confirm to add tutor to favorites
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleAddFavoriteDiaglogClose}>Cancel</Button>
+          <Button onClick={handleAddFavorite} autoFocus>
             Confirm
           </Button>
         </DialogActions>

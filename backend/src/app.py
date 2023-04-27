@@ -363,12 +363,12 @@ def favorite():
         req = request.get_json()
         netid = session["net_id"].upper()
         tutor_id = req["tutor_id"]
-        select_favorite = f"SELECT * FROM Favorites WHERE tutor_id = % AND students_id = %"
+        select_favorite = f"SELECT * FROM Favorites WHERE tutor_id = %s AND student_id = %s"
         insert_new_favorite = f"INSERT INTO Favorites (tutor_id, student_id) VALUES " \
             f"(%s,%s)"
         cursor.execute(select_favorite, (tutor_id, netid))
         results = cursor.fetchall()
-        if len(result) > 0:
+        if len(results) > 0:
             return {"msg": "tutor already in favorite list."}, 400
 
         cursor.execute(insert_new_favorite, (tutor_id, netid))

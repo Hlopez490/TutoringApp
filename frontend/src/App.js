@@ -12,6 +12,7 @@ import Dashboard from "./Dashboard";
 import AllTutors from './AllTutors';
 import FavoriteTutors from './FavoriteTutors';
 import MakeAppointment from './MakeAppointment';
+import Profile from './Profile'
 function App() {
 
   
@@ -26,6 +27,7 @@ function App() {
       <Route path="/allTutors" element={<AllTutors/>} />
       <Route path="/favoriteTutors" element={<FavoriteTutors/>} />
       <Route path="/makeAppointment" element={<MakeAppointment/>} />
+      <Route path="/profile" element={<Profile/>} />
     </Routes>
   </Router>
   );
