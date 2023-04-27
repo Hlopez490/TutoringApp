@@ -412,8 +412,10 @@ def favorite():
         req = request.get_json()
         netid = session["net_id"].upper()
         tutor_id = req["tutor_id"]
+        print(netid)
+        print(tutor_id)
 
-        Delete_tutor = f"DELETE FROM Favorites WHERE tutor_id = %s AND user_id = %s"
+        Delete_tutor = f"DELETE FROM Favorites WHERE tutor_id = %s AND student_id = %s"
         cursor.execute(Delete_tutor, (tutor_id, netid))
         db.commit()
         return {"msg": "Successfully deleted"}, 200

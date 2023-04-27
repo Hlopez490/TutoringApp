@@ -12,6 +12,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 import { useNavigate } from "react-router-dom";
 
+import Alert from '@mui/material/Alert';
+
+
 
 
 const AppointmentList = ({ appointments, tutor, subject }) => {
@@ -62,13 +65,16 @@ const AppointmentList = ({ appointments, tutor, subject }) => {
           navigate("/dashboard");
           return response.json();
         } else {
-           throw new Error('Unable to make appointment');
+            console.log(response.data)
+           throw new Error("Unable to make appointment. Appointment is either passed or conflicts with your schedule.");
         }
    })
     .then((data) => console.log(data))
     .catch(err => {
+        console.log(err.message);
       setError(err.message); 
       setIsWarning(true); 
+      setOpen(false); 
     });
   };
 
@@ -85,6 +91,7 @@ const AppointmentList = ({ appointments, tutor, subject }) => {
                 )) }
             </Stack>
 
+            {error?<Alert severity="error">{error}</Alert>:null} 
 
 
             <Dialog

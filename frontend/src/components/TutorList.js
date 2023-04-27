@@ -26,12 +26,49 @@ import { useNavigate } from "react-router-dom";
 import { Delete } from '@mui/icons-material';
 
 
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+
 const TutorList = ({ tutors, fav }) => {
   const navigate = useNavigate();
     useEffect(() => {
     }, [tutors]);
     const [open, setOpen] = React.useState(false);
     const [tutorP, setTutorP] = React.useState("");
+
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      const data = new FormData();
+      data.append("tutor_id", tutorP.tutor_id)
+
+  
+  
+  
+      const value = Object.fromEntries(data.entries());
+  
+      fetch('/favorites', {
+        method: 'DELETE',
+        headers: {
+          'Content-type': "application/json",
+        },
+        body: JSON.stringify(value),
+      })
+      .then(response => {
+        //console.log(request)        
+        if (response.ok) {
+            navigate("/dashboard");
+            return response.json();
+          } else {
+             throw new Error('Unable to make appointment');
+          }
+     })
+      .then((data) => console.log(data))
+      
+    };
 
   const handleClickOpen = (tutor) => {
     setTutorP(tutor); 
@@ -42,6 +79,12 @@ const TutorList = ({ tutors, fav }) => {
         tutorS: tutor
       }
     }); 
+    
+  };
+
+  const handleDialogOpen = (tutor) => {
+    setTutorP(tutor); 
+    setOpen(true);
     
   };
 
@@ -83,7 +126,7 @@ const TutorList = ({ tutors, fav }) => {
               </Typography>
             </CardContent>
             <CardActions>
-                {fav && <IconButton aria-label="add to favorites">
+                {fav && <IconButton onClick={() =>handleDialogOpen(tutor)} aria-label="add to favorites">
                     <DeleteIcon />
                 </IconButton>}
                 <Button size="small" onClick={() =>handleClickOpen(tutor)}>Book Appointment</Button>
@@ -97,6 +140,33 @@ const TutorList = ({ tutors, fav }) => {
         ))}
        </Grid>
        </Container>
+
+
+
+
+
+
+       <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Click confirm to remove tutor from favorite
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit} autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
        
       </div>
       
