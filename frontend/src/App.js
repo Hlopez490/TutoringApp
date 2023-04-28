@@ -14,6 +14,7 @@ import FavoriteTutors from './FavoriteTutors';
 import MakeAppointment from './MakeAppointment';
 import Profile from './Profile'
 import BecomeTutor from './BecomeTutor';
+import Availability from './Availability';
 function App() {
 
   
@@ -30,6 +31,9 @@ function App() {
       <Route path="/makeAppointment" element={<MakeAppointment/>} />
       <Route path="/profile" element={<Profile/>} />
       <Route path="/becomeTutor" element={<BecomeTutor/>} />
+      <Route path="/availability" element={<Availability/>} />
+
+     
     </Routes>
   </Router>
   );
