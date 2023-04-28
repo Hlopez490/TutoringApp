@@ -13,7 +13,10 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-
+import Container from '@mui/material/Container';
+import { useNavigate } from "react-router-dom";
+import Alert from '@mui/material/Alert';
+import { useEffect, useState } from "react";
 
 function fetchDays(date, { signal }) {
     let appointment_info; 
@@ -25,7 +28,6 @@ function fetchDays(date, { signal }) {
       })
       .then(data => { 
         appointment_info = data; 
-        //console.log(data); 
       })
     
     
@@ -34,14 +36,13 @@ function fetchDays(date, { signal }) {
       const daysInMonth = new Date(date).getMonth();
       let daysToHighlight1 = appointment_info.filter((asd) => new Date (asd.start_time).getMonth() === daysInMonth);
       console.log(daysToHighlight1);
+
       let daysToHighlight2 = daysToHighlight1.map(dates => (new Date(dates.start_time).getDate()))
       daysToHighlight2.unshift(0); 
+
       const daysToHighlight = daysToHighlight2
       console.log(daysToHighlight); 
 
-      //const daysInMonth = date.daysInMonth();
-      //const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
-      //console.log("Days to Highlight: " + daysToHighlight)
       resolve({ daysToHighlight });
     }, 1000);
 
@@ -74,26 +75,27 @@ function ServerDay(props) {
 }
 
 ServerDay.propTypes = {
-  /**
-   * The date to show.
-   */
   day: PropTypes.object.isRequired,
   highlightedDays: PropTypes.arrayOf(PropTypes.number),
-  /**
-   * If `true`, day is outside of month and will be hidden.
-   */
+
   outsideCurrentMonth: PropTypes.bool.isRequired,
-  /**
-   * Callback fired when the day is clicked.
-   */
+
   onClick: PropTypes.func,
 };
 
 export default function DateCalendarServerRequest() {
   const requestAbortController = React.useRef(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
+  const [highlightedDays, setHighlightedDays] = React.useState([0]);
   const [selectedDayInfo, setSelectedDayInfo] = React.useState(null);
+
+  const [error, setError] = useState(null)
+  const [isWarning, setIsWarning] = useState(false)
+
+
+  
+  
+  const navigate = useNavigate();
 
   const fetchHighlightedDays = (date) => {
     const controller = new AbortController();
@@ -140,20 +142,45 @@ export default function DateCalendarServerRequest() {
     .then(data => {
       const clickedDay = new Date(day).getDate();
       let dayInfo = data.filter((asd) => new Date (asd.start_time).getDate() === clickedDay);
-      console.log((new Date(dayInfo[0].start_time)).toLocaleTimeString('en-US',{ hour: 'numeric', minute: 'numeric'}));
+      
       setSelectedDayInfo(dayInfo);
     })
   };
 
   const handleDeleteAppointment = (appointmentInfo) => {
-    fetch('/student-appointment-info' , {
-      method: 'GET'
+    console.log(appointmentInfo);
+
+    const data = new FormData();
+    data.append("start_time", appointmentInfo.start_time)
+    data.append("end_time", appointmentInfo.end_time)
+
+    const value = Object.fromEntries(data.entries());
+    console.log(appointmentInfo.tutor_id);
+    console.log(value);
+
+    fetch('/dashboard/' + appointmentInfo.tutor_id, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': "application/json",
+      },
+      body: JSON.stringify(value)
     })
     .then(res => {
-      return res.json();
+      if (res.ok) {
+        navigate("/dashboard");
+        return res.json();
+      } else {
+          console.log(res.data)
+         throw new Error("Unable to delete appointment. Passed 24 Hours.");
+      }
     })
-    .then(data => {
-    })
+    .then(data => console.log(data))
+    .catch(err => {
+        console.log(err.message);
+      setError(err.message); 
+      setIsWarning(true); 
+
+    });
   };
 
   
@@ -175,10 +202,14 @@ export default function DateCalendarServerRequest() {
           },
         }}
       />
+      <Container sx = {{py: 8}} maxWidth ="md" columnSpacing={1}>
       <Grid container rowSpacing={2} columnSpacing={1}>
       {selectedDayInfo && selectedDayInfo.map(appointmentInfo => (
-            <Grid item key={appointmentInfo} md={6} >
+          <Grid item key={appointmentInfo} md={6} >
           <div style={{margin: '5%, 5%, 5%, 5%'}}>
+
+          <br/>
+            {error?<Alert severity="error">{error}</Alert>:null}
             
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardHeader
@@ -204,6 +235,7 @@ export default function DateCalendarServerRequest() {
           </Grid>
         ))}
         </Grid>
+       </Container>
     </LocalizationProvider>
     
   );

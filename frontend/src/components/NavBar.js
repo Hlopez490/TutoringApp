@@ -120,6 +120,14 @@ const NavBar = ({ title }) => {
           open={open}
         >
           <DrawerHeader>
+          <img src={require('../images/logo.png')}
+             alt="logo"
+             style={{ 
+              alignSelf: 'center',
+              width: '100px',
+              height: '100px' 
+              }} 
+             />
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
             </IconButton>

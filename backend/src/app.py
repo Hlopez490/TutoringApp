@@ -284,11 +284,12 @@ def delete_appointment(tutor_id):
 
         temp = end_time.split()
         end_time = f"{temp[3]}-{months[temp[2]]}-{temp[1]} {temp[4]}"
+        print(start_time)
 
-        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s" \
+        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s " \
                                 f"WHERE netid = %s"
         
-        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s" \
+        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s " \
                             f"WHERE tutor_id = %s"
 
         delete_appointment = f"DELETE FROM Appointments WHERE student_id = %s AND " \
@@ -638,7 +639,7 @@ def student_appointment_info():
     if request.method == 'GET':
         student_id = session["net_id"].upper()
         
-        get_student_appointments = f"SELECT A.start_time, A.end_time, S.first_name, S.last_name, S.phone, S.email, S.minutes_tutored, A.subject "\
+        get_student_appointments = f"SELECT A.start_time, A.end_time, S.first_name, S.last_name, S.phone, S.email, S.minutes_tutored, A.subject, A.tutor_id "\
                                     f"FROM Appointments A, Student S WHERE A.student_id = %s AND A.tutor_id = S.tutor_id"
         cursor.execute(get_student_appointments, (student_id,))
         results = cursor.fetchall()
@@ -654,6 +655,7 @@ def student_appointment_info():
             appointment["tutor_email"] = result[5]
             appointment["tutor_minutes_tutored"] = result[6]
             appointment["subject"] = result[7]
+            appointment["tutor_id"] = result[8]
             appointments.append(appointment)
         
         return appointments, 200

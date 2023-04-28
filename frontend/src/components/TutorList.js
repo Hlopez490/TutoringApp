@@ -1,29 +1,19 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
 import Avatar from '@mui/material/Avatar';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
 import { useEffect, useState } from "react";
-import MakeAppointment from '../MakeAppointment';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
-import { Delete } from '@mui/icons-material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 
@@ -165,7 +155,7 @@ const TutorList = ({ tutors, fav }) => {
         <Container sx = {{py: 8}} maxWidth ="md" columnSpacing={1}>
         <Grid container rowSpacing={2} columnSpacing={1}>
         {tutors.map(tutor => (
-            <Grid item key={tutor} md={6} >
+          <Grid item key={tutor} md={6} >
           <div style={{margin: '5%, 5%, 5%, 5%'}}>
             
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
