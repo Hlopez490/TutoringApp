@@ -37,14 +37,13 @@ const Dashboard = () => {
     //if authentification actually happened
     else {
     
-        let daysToHighlight = appointments.map(dates => (new Date(dates.start_time).toDateString()))
-        console.log(daysToHighlight);
+        let startTime = appointments.map(dates => (new Date(dates.start_time).toDateString()));
+        let endTime = appointments.map(dates => (new Date(dates.end_time).toDateString()));
 
         return (
             <div>
                 <NavBar title ="Dashboard" />
                 <Calendar />
-                <p> Days:: {daysToHighlight} || </p>
             </div>
             );
     }

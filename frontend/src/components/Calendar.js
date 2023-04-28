@@ -18,7 +18,7 @@ function getRandomNumber(min, max) {
  * ⚠️ No IE11 support
  */
 function fakeFetch(date, { signal }) {
-    let d; 
+    let appointment_info; 
     fetch('/student-appointment-info' , {
         method: 'GET'
       })
@@ -26,21 +26,19 @@ function fakeFetch(date, { signal }) {
         return res.json();
       })
       .then(data => { 
-        d = data; 
+        appointment_info = data; 
         //console.log(data); 
       })
     
     
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
-        console.log(d)
       const daysInMonth = new Date(date).getMonth();
-      let daysToHighlight1 = d.filter((asd) => new Date (asd.start_time).getMonth() === daysInMonth);
+      let daysToHighlight1 = appointment_info.filter((asd) => new Date (asd.start_time).getMonth() === daysInMonth);
       console.log(daysToHighlight1);
       let daysToHighlight2 = daysToHighlight1.map(dates => (new Date(dates.start_time).getDate()))
       daysToHighlight2.unshift(0); 
       const daysToHighlight = daysToHighlight2
-       // (data.filter((asd) => new Date(asd.start_time) === daysInMonth)).start_time;
       console.log(daysToHighlight); 
 
       //const daysInMonth = date.daysInMonth();
@@ -59,7 +57,8 @@ function fakeFetch(date, { signal }) {
 const initialValue = dayjs(new Date().toDateString());
 
 function ServerDay(props) {
-  const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
+
+  const { highlightedDays = [], day, outsideCurrentMonth, onClick, ...other } = props;
 
   const isSelected =
     !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) > 0;
@@ -69,6 +68,7 @@ function ServerDay(props) {
       key={props.day.toString()}
       overlap="circular"
       badgeContent={isSelected ? '⭐' : undefined}
+      onClick={() => onClick(day)}
     >
       <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
     </Badge>
@@ -85,12 +85,17 @@ ServerDay.propTypes = {
    * If `true`, day is outside of month and will be hidden.
    */
   outsideCurrentMonth: PropTypes.bool.isRequired,
+  /**
+   * Callback fired when the day is clicked.
+   */
+  onClick: PropTypes.func,
 };
 
 export default function DateCalendarServerRequest() {
   const requestAbortController = React.useRef(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
+  const [selectedDayInfo, setSelectedDayInfo] = React.useState(null);
 
   const fetchHighlightedDays = (date) => {
     const controller = new AbortController();
@@ -129,6 +134,20 @@ export default function DateCalendarServerRequest() {
     fetchHighlightedDays(date);
   };
 
+  const handleDayClick = (day) => {
+    fetch('/student-appointment-info' , {
+      method: 'GET'
+    })
+    .then(res => {
+      return res.json();
+    })
+    .then(data => {
+      const clickedDay = new Date(day).getDate();
+      let dayInfo = data.filter((asd) => new Date (asd.start_time).getDate() === clickedDay);
+      setSelectedDayInfo(dayInfo);
+    })
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateCalendar
@@ -142,9 +161,19 @@ export default function DateCalendarServerRequest() {
         slotProps={{
           day: {
             highlightedDays,
+            onClick: handleDayClick,
           },
         }}
       />
+      {selectedDayInfo && (
+      <div>
+        <h3>Appointment Information:</h3>
+        <p>EndTime: {selectedDayInfo[0].end_time}</p>
+        <p>StartTime: {selectedDayInfo[0].start_time}</p>
+        <p>TutorPhone: {selectedDayInfo[0].tutor_phone}</p>
+      </div>
+    )}
     </LocalizationProvider>
+    
   );
 }
