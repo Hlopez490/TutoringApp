@@ -57,7 +57,6 @@ const BecomeTutorSteps = () => {
     const data = new FormData();
     let subjects = "";
     data.append("about", aboutMe)
-    console.log(state)
     for (let k in state) {
       console.log(state[k])
       if (state[k]) {
@@ -65,25 +64,17 @@ const BecomeTutorSteps = () => {
          
       }
   }
-  console.log(subjects); 
-  data.append("subjects", subjects)
-  data.append("image", file)
 
-
+    data.append("subjects", subjects)
+    data.append("image", file)
+    //const value = Object.fromEntries(data.entries());
+    //console.log(value)
     
-   
-
-    const value = Object.fromEntries(data.entries());
-    console.log(value)
-    
-    console.log(JSON.stringify(value))
+    //console.log(JSON.stringify(value))
 
     fetch('/reg_tutor', {
       method: 'POST',
-      headers: {
-        'Content-type': "application/json",
-      },
-      body: JSON.stringify(value),
+      body: data//JSON.stringify(value),
     })
     .then(response => {
       //console.log(request)        
@@ -225,6 +216,7 @@ const BecomeTutorSteps = () => {
                       onChange={handleFileChange}
                       type="file"
                       hidden
+                      name="image"
                     />
                   </Button>
                 </Grid>

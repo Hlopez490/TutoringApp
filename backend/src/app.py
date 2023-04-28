@@ -92,15 +92,12 @@ def signup():
 @app.route('/reg_tutor', methods=['POST'])
 def reg_tutor():
     if request.method == 'POST':
-        req = request.get_json()
         student_id = session["net_id"].upper()
-        about = req['about']
-        subjects = req['subjects']
-        image = req["image"]
-        print(about)
-        print(subjects)
-        print(image)
+        about = request.form['about']
+        subjects = request.form['subjects']
+
         subjects = list(subjects.split(", "))
+        subjects.pop(0)
         # use default image if no profile picture uploaded
         if 'image' not in request.files:
             image_name = "default.jpg"
@@ -113,7 +110,6 @@ def reg_tutor():
             image_name = image.filename
             print(image_name)
 
-        return {"msg": "register successfully"}, 200
         # tutor id = student_id + 6 random ascii letters
         rad = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
         tutor_id = student_id + rad
@@ -486,12 +482,11 @@ def tutorList():
         
         cursor.execute(select_subjects)
         result_ = cursor.fetchall()
-        print(result_)
         for result in result_:
             for tutor in Tutors:
                 if tutor["tutor_id"] == result[1]:
                     tutor["subjects"].append(result[0])
-                  
+        print(Tutors)          
         return Tutors, 200
 
 

@@ -83,9 +83,20 @@ const ProfileInfo = ({ info }) => {
                     variant="filled"
                   />
                 </Grid>
+                <Grid item xs={12}>
+                <TextField
+                    disabled
+                    fullWidth
+                    id="mi"
+                    label="hours tutored"
+                    defaultValue={(info[0].minutes_tutored/60)}
+                    variant="filled"
+                  />
+                </Grid>
                 
               </Grid>
-              {!info.IsTutor && 
+              {console.log(info[0].IsTutor)}
+              {!info[0].IsTutor && 
               <Button
                 fullWidth
                 variant="outlined"
