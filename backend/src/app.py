@@ -625,7 +625,7 @@ def student_appointment_info():
     if request.method == 'GET':
         student_id = session["net_id"].upper()
         
-        get_student_appointments = f"SELECT A.start_time, A.end_time, S.first_name, S.last_name, S.phone, S.email, S.minutes_tutored "\
+        get_student_appointments = f"SELECT A.start_time, A.end_time, S.first_name, S.last_name, S.phone, S.email, S.minutes_tutored, A.subject "\
                                     f"FROM Appointments A, Student S WHERE A.student_id = %s AND A.tutor_id = S.tutor_id"
         cursor.execute(get_student_appointments, (student_id,))
         results = cursor.fetchall()
@@ -640,6 +640,7 @@ def student_appointment_info():
             appointment["tutor_phone"] = result[4]
             appointment["tutor_email"] = result[5]
             appointment["tutor_minutes_tutored"] = result[6]
+            appointment["subject"] = result[7]
             appointments.append(appointment)
         
         return appointments, 200

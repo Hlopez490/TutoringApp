@@ -7,17 +7,15 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import { arrayIncludes } from '@mui/x-date-pickers/internals/utils/utils';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 
-function getRandomNumber(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
-}
 
-/**
- * Mimic fetch with abort controller https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
- * ⚠️ No IE11 support
- */
-function fakeFetch(date, { signal }) {
+function fetchDays(date, { signal }) {
     let appointment_info; 
     fetch('/student-appointment-info' , {
         method: 'GET'
@@ -99,7 +97,7 @@ export default function DateCalendarServerRequest() {
 
   const fetchHighlightedDays = (date) => {
     const controller = new AbortController();
-    fakeFetch(date, {
+    fetchDays(date, {
       signal: controller.signal,
     })
       .then(({ daysToHighlight }) => {
@@ -124,8 +122,6 @@ export default function DateCalendarServerRequest() {
 
   const handleMonthChange = (date) => {
     if (requestAbortController.current) {
-      // make sure that you are aborting useless requests
-      // because it is possible to switch between months pretty quickly
       requestAbortController.current.abort();
     }
 
@@ -144,9 +140,23 @@ export default function DateCalendarServerRequest() {
     .then(data => {
       const clickedDay = new Date(day).getDate();
       let dayInfo = data.filter((asd) => new Date (asd.start_time).getDate() === clickedDay);
+      console.log(dayInfo);
       setSelectedDayInfo(dayInfo);
     })
   };
+
+  const handleDeleteAppointment = (appointmentInfo) => {
+    fetch('/student-appointment-info' , {
+      method: 'GET'
+    })
+    .then(res => {
+      return res.json();
+    })
+    .then(data => {
+    })
+  };
+
+  
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -165,6 +175,7 @@ export default function DateCalendarServerRequest() {
           },
         }}
       />
+<<<<<<< Updated upstream
       {selectedDayInfo && (
       <div>
         <h3>Appointment Information:</h3>
@@ -178,6 +189,33 @@ export default function DateCalendarServerRequest() {
         <p>Hour Tutored: {selectedDayInfo[0].tutor_minutes_tutored/60}</p>
       </div>
     )}
+=======
+      <Grid container rowSpacing={2} columnSpacing={1}>
+      {selectedDayInfo && selectedDayInfo.map(appointmentInfo => (
+            <Grid item key={appointmentInfo} md={6} >
+          <div style={{margin: '5%, 5%, 5%, 5%'}}>
+            
+          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardHeader
+              title= { appointmentInfo.tutor_first_name + ' ' + appointmentInfo.tutor_last_name } 
+              subheader= { appointmentInfo.subject }
+            />
+            <CardContent>
+              <Typography variant="body2" color="text.secondary">
+                Start Time: { appointmentInfo.start_time } <br />
+                End Time: { appointmentInfo.end_time } <br />
+                Email: { appointmentInfo.tutor_email } <br />
+              </Typography>
+              <Button size="small" onClick={() =>handleDeleteAppointment(appointmentInfo)}>Delete Appointment</Button>
+            </CardContent>
+            
+          </Card>
+          
+          </div>
+          </Grid>
+        ))}
+        </Grid>
+>>>>>>> Stashed changes
     </LocalizationProvider>
     
   );
