@@ -74,6 +74,9 @@ const BecomeTutorSteps = () => {
    
 
     const value = Object.fromEntries(data.entries());
+    console.log(value)
+    
+    console.log(JSON.stringify(value))
 
     fetch('/reg_tutor', {
       method: 'POST',
