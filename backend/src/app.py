@@ -276,7 +276,7 @@ def make_appointment(tutor_id):
 
 
 @app.route('/dashboard/<tutor_id>', methods=['DELETE'])
-def delete_appointment(tutor_id, start_time, end_time):
+def delete_appointment(tutor_id):
     if request.method == 'DELETE':
         student_id = session["net_id"].upper()
         req = request.get_json()
