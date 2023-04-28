@@ -175,21 +175,6 @@ export default function DateCalendarServerRequest() {
           },
         }}
       />
-<<<<<<< Updated upstream
-      {selectedDayInfo && (
-      <div>
-        <h3>Appointment Information:</h3>
-        <p>Tutor First Name: {selectedDayInfo[0].tutor_first_name}</p>
-        <p>Tutor Last Name: {selectedDayInfo[0].tutor_last_name}</p>
-        <p>StartTime: {selectedDayInfo[0].start_time}</p>
-        <p>EndTime: {selectedDayInfo[0].end_time}</p>
-        <p>Tutor Phone: {selectedDayInfo[0].tutor_phone}</p>
-        <p>Tutor Email:{selectedDayInfo[0].tutor_email}</p>
-        <p>Tutor First Name: {selectedDayInfo[0].tutor_first_name}</p>
-        <p>Hour Tutored: {selectedDayInfo[0].tutor_minutes_tutored/60}</p>
-      </div>
-    )}
-=======
       <Grid container rowSpacing={2} columnSpacing={1}>
       {selectedDayInfo && selectedDayInfo.map(appointmentInfo => (
             <Grid item key={appointmentInfo} md={6} >
@@ -215,7 +200,6 @@ export default function DateCalendarServerRequest() {
           </Grid>
         ))}
         </Grid>
->>>>>>> Stashed changes
     </LocalizationProvider>
     
   );
