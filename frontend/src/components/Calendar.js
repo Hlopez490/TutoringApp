@@ -140,7 +140,7 @@ export default function DateCalendarServerRequest() {
     .then(data => {
       const clickedDay = new Date(day).getDate();
       let dayInfo = data.filter((asd) => new Date (asd.start_time).getDate() === clickedDay);
-      console.log(dayInfo);
+      console.log((new Date(dayInfo[0].start_time)).toLocaleTimeString('en-US',{ hour: 'numeric', minute: 'numeric'}));
       setSelectedDayInfo(dayInfo);
     })
   };
@@ -187,8 +187,12 @@ export default function DateCalendarServerRequest() {
             />
             <CardContent>
               <Typography variant="body2" color="text.secondary">
-                Start Time: { appointmentInfo.start_time } <br />
-                End Time: { appointmentInfo.end_time } <br />
+                Start Time: {
+                (new Date(appointmentInfo.start_time ).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric'}))
+                }<br />
+                End Time: { 
+                (new Date(appointmentInfo.end_time ).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric'}))
+                } <br />
                 Email: { appointmentInfo.tutor_email } <br />
               </Typography>
               <Button size="small" onClick={() =>handleDeleteAppointment(appointmentInfo)}>Delete Appointment</Button>

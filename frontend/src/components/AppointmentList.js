@@ -85,7 +85,12 @@ const AppointmentList = ({ appointments, tutor, subject }) => {
 
                 {appointments.map(appointment => (
                     <div>
-                        <Button onClick={() =>handleClickOpen(appointment)} variant="outlined">{new Date (appointment.start_time).toTimeString().substring(0,5) + "-" + new Date (appointment.end_time).toTimeString().substring(0,5)}</Button>
+                        <Button onClick={() =>handleClickOpen(appointment)} variant="outlined">
+                          {
+                          new Date (appointment.start_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric'}) 
+                          + " - " + new Date (appointment.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric'})
+                          }
+                        </Button>
 
                     </div>
                 )) }
