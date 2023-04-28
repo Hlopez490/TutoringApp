@@ -1,26 +1,20 @@
 import * as React from 'react';
 import { useEffect, useState } from "react";
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from "react-router-dom";
-import Alert from '@mui/material/Alert';
 
 
 const theme = createTheme();
 const ProfileInfo = ({ info }) => {
 
     const navigate = useNavigate();
-    const [error, setError] = useState(null)
-    const [isWarning, setIsWarning] = useState(false)
+    
 
     useEffect(() => {
     }, [info]);
@@ -91,11 +85,12 @@ const ProfileInfo = ({ info }) => {
                 </Grid>
                 
               </Grid>
-              {!info.IsTutor && <Button
-                type="submit"
+              {!info.IsTutor && 
+              <Button
                 fullWidth
-                variant="contained"
+                variant="outlined"
                 sx={{ mt: 3, mb: 2 }}
+                onClick={() => (navigate("/becomeTutor"))}
               >
                 Become Tutor
               </Button> }
@@ -103,7 +98,6 @@ const ProfileInfo = ({ info }) => {
                 <Grid item>
                 </Grid>
               </Grid>
-              {error?<Alert severity="error">{error}</Alert>:null} 
             </Box>
           </Box>
           

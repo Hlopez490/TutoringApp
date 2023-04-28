@@ -11,14 +11,15 @@ import FormControl from '@mui/material/FormControl';
 
 
 
-
+//Page displays all tutors 
 const AllTutors = () => {
     
-    
+    //state that gets all tutors info, search bar, and subjects
     const [tutors, setTutors] = useState(null)
     const [search, setSearch] = useState("");
     const [subject, setSubject] = useState([""]); 
 
+    //fetching tutor list
     useEffect(() => {
         fetch('/tutorList', {
             method: 'GET'
@@ -32,6 +33,7 @@ const AllTutors = () => {
           })
       }, [])
 
+      //changing subject from list
       const handleChange = (event) => {
         setSubject(event.target.value);
       };
