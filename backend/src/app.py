@@ -92,23 +92,26 @@ def signup():
 @app.route('/reg_tutor', methods=['POST'])
 def reg_tutor():
     if request.method == 'POST':
-
+        req = request.get_json()
         student_id = session["net_id"].upper()
-        about = request.form.get('about')
-        subjects = request.form.get('subjects')
+        about = req['about']
+        subjects = req['subjects']
+        print(about)
+        print(subjects)
         subjects = list(subjects.split(", "))
-
         # use default image if no profile picture uploaded
         if 'image' not in request.files:
             image_name = "default.jpg"
         else:
             image = request.files["image"]
+            print(image)
             # save the image in "static\images"
             image.save(os.path.join(os.path.abspath(os.path.dirname(__file__)),app.config["UPLOAD_FOLDER"], secure_filename(image.filename)))
             #image.save(os.path.join(os.path.abspath(os.pardir),"backend", app.config["UPLOAD_FOLDER"], secure_filename(image.filename)))
             image_name = image.filename
-        
-
+            print(image_name)
+            
+        return {"msg": "register successfully"}, 200
         # tutor id = student_id + 6 random ascii letters
         rad = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
         tutor_id = student_id + rad

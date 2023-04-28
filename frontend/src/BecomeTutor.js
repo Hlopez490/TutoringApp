@@ -6,6 +6,8 @@ import BecomeTutorSteps from "./components/BecomeTutorSteps";
 
 //page to become a tutor
 const BecomeTutor = () => {
+
+    
     return (
       <div className="home">
             <NavBar title ="Become Tutor" />

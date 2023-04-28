@@ -22,6 +22,17 @@ import Switch from '@mui/material/Switch';
 
 const BecomeTutorSteps = () => {
   const theme = createTheme();
+  const [aboutMe, setAboutMe] = useState("");
+
+  const [file, setFile] = useState();
+
+  const handleFileChange = (e) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+
   const navigate = useNavigate();
 
   //which subjects are liked
@@ -37,6 +48,51 @@ const BecomeTutorSteps = () => {
     DISCRETE_MATHEMATICS: false,
     MACHINE_LEARNING: false,
   });
+
+  
+
+  //handle sending info to backend
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData();
+    let subjects = "";
+    data.append("about", aboutMe)
+    console.log(state)
+    for (let k in state) {
+      console.log(state[k])
+      if (state[k]) {
+        subjects = subjects.concat(", ", k);
+         
+      }
+  }
+  console.log(subjects); 
+  data.append("subjects", subjects)
+  data.append("image", file)
+
+
+    
+   
+
+    const value = Object.fromEntries(data.entries());
+
+    fetch('/reg_tutor', {
+      method: 'POST',
+      headers: {
+        'Content-type': "application/json",
+      },
+      body: JSON.stringify(value),
+    })
+    .then(response => {
+      //console.log(request)        
+      if (response.ok) {
+          //navigate("/");
+          return response.json();
+        } else {
+            console.log(response.data)
+           throw new Error("Unable to make appointment. Appointment is either passed or conflicts with your schedule.");
+        }
+   })
+  }
 
   //changes when switch changes for subject liked
   const handleChange = (event) => {
@@ -76,7 +132,8 @@ const BecomeTutorSteps = () => {
                     label="About me"
                     multiline
                     rows={10}
-                    fullWidth = "true" 
+                    fullWidth = "true"
+                    onChange={(e) => setAboutMe(e.target.value)} 
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -162,6 +219,7 @@ const BecomeTutorSteps = () => {
                     Upload File
                     <input
                       accept="image/png, image/gif, image/jpeg"
+                      onChange={handleFileChange}
                       type="file"
                       hidden
                     />
@@ -169,7 +227,7 @@ const BecomeTutorSteps = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                <Button variant="outlined">Submit</Button>  
+                <Button onClick={handleSubmit}  variant="outlined">Submit</Button>  
                 <br/> <br/>        
                   
                 </Grid>
