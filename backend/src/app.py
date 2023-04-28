@@ -96,8 +96,10 @@ def reg_tutor():
         student_id = session["net_id"].upper()
         about = req['about']
         subjects = req['subjects']
+        image = req["image"]
         print(about)
         print(subjects)
+        print(image)
         subjects = list(subjects.split(", "))
         # use default image if no profile picture uploaded
         if 'image' not in request.files:
@@ -110,7 +112,7 @@ def reg_tutor():
             #image.save(os.path.join(os.path.abspath(os.pardir),"backend", app.config["UPLOAD_FOLDER"], secure_filename(image.filename)))
             image_name = image.filename
             print(image_name)
-            
+
         return {"msg": "register successfully"}, 200
         # tutor id = student_id + 6 random ascii letters
         rad = "".join([random.choice(string.ascii_letters + string.digits) for _ in range(6)])
