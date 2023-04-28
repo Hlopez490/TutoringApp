@@ -79,7 +79,7 @@ const BecomeTutorSteps = () => {
     .then(response => {
       //console.log(request)        
       if (response.ok) {
-          //navigate("/");
+          navigate("/");
           return response.json();
         } else {
             console.log(response.data)
@@ -215,7 +215,6 @@ const BecomeTutorSteps = () => {
                       accept="image/png, image/gif, image/jpeg"
                       onChange={handleFileChange}
                       type="file"
-                      hidden
                       name="image"
                     />
                   </Button>
