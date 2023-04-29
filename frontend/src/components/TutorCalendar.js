@@ -213,7 +213,7 @@ export default function DateCalendarServerRequest() {
             
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardHeader
-              title= { appointmentInfo.tutor_first_name + ' ' + appointmentInfo.tutor_last_name } 
+              title= { appointmentInfo.student_first_name + ' ' + appointmentInfo.student_last_name } 
               subheader= { appointmentInfo.subject }
             />
             <CardContent>
@@ -224,7 +224,7 @@ export default function DateCalendarServerRequest() {
                 End Time: { 
                 (new Date(appointmentInfo.end_time ).toLocaleTimeString('en-US', {timeZone: "GMT", hour: 'numeric', minute: 'numeric'}))
                 } <br />
-                Email: { appointmentInfo.tutor_email } <br />
+                Email: { appointmentInfo.student_email } <br />
               </Typography>
               <Button size="small" onClick={() =>handleDeleteAppointment(appointmentInfo)}>Delete Appointment</Button>
             </CardContent>

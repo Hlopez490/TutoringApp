@@ -8,7 +8,7 @@ const ViewTAppoint = () => {
     const [authenticated, setauthenticated] = useState(null);
     const [appointments, setAppointments] = useState(['']);
 
-    useEffect(() => {
+   /* useEffect(() => {
         const loggedInUser = localStorage.getItem("authenticated");
         console.log(loggedInUser)
         if (loggedInUser) {
@@ -25,7 +25,7 @@ const ViewTAppoint = () => {
             setAppointments(data);
           })
 
-    }, []);
+    }, []); */
 
     //Routing back if no authentication
     if (!localStorage.getItem("authenticated")) {
@@ -36,8 +36,8 @@ const ViewTAppoint = () => {
     //if authentification actually happened
     else {
     
-        let startTime = appointments.map(dates => (new Date(dates.start_time).toDateString()));
-        let endTime = appointments.map(dates => (new Date(dates.end_time).toDateString()));
+        //let startTime = appointments.map(dates => (new Date(dates.start_time).toDateString()));
+       // let endTime = appointments.map(dates => (new Date(dates.end_time).toDateString()));
 
         return (
             <div>
