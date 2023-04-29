@@ -87,8 +87,8 @@ const AppointmentList = ({ appointments, tutor, subject }) => {
                     <div>
                         <Button onClick={() =>handleClickOpen(appointment)} variant="outlined">
                           {
-                          new Date (appointment.start_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric'}) 
-                          + " - " + new Date (appointment.end_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric'})
+                          new Date (appointment.start_time).toLocaleTimeString('en-US', {timeZone: "GMT", hour: 'numeric', minute: 'numeric'}) 
+                          + " - " + new Date (appointment.end_time).toLocaleTimeString('en-US', {timeZone: "GMT", hour: 'numeric', minute: 'numeric'})
                           }
                         </Button>
 

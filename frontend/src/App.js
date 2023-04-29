@@ -15,6 +15,7 @@ import MakeAppointment from './MakeAppointment';
 import Profile from './Profile'
 import BecomeTutor from './BecomeTutor';
 import Availability from './Availability';
+import ViewTAppoint from './ViewTAppoint'; 
 function App() {
 
   
@@ -32,6 +33,7 @@ function App() {
       <Route path="/profile" element={<Profile/>} />
       <Route path="/becomeTutor" element={<BecomeTutor/>} />
       <Route path="/availability" element={<Availability/>} />
+      <Route path="/tutorAppointments" element={<ViewTAppoint/>} />
 
      
     </Routes>

@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 
 function fetchDays(date, { signal }) {
     let appointment_info; 
-    fetch('/student-appointment-info' , {
+    fetch('/tutor_student_info' , {
         method: 'GET'
       })
       .then(res => {
@@ -133,7 +133,7 @@ export default function DateCalendarServerRequest() {
   };
 
   const handleDayClick = (day) => {
-    fetch('/student-appointment-info' , {
+    fetch('/tutor_student_info' , {
       method: 'GET'
     })
     .then(res => {

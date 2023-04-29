@@ -114,6 +114,16 @@ const ProfileInfo = ({ info }) => {
               >
                 Update Availability
               </Button> }
+
+              {info[0].IsTutor && 
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={() => (navigate("/tutorAppointments"))}
+              >
+                See Tutoring Appointments
+              </Button> }
               <Grid container justifyContent="flex-end">
                 <Grid item>
                 </Grid>
