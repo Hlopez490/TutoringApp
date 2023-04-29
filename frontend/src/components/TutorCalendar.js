@@ -158,7 +158,7 @@ export default function DateCalendarServerRequest() {
     console.log(appointmentInfo.tutor_id);
     console.log(value);
 
-    fetch('/dashboard/' + appointmentInfo.tutor_id, {
+    fetch('/tutor_dashboard' + appointmentInfo.student_id, {
       method: 'DELETE',
       headers: {
         'Content-type': "application/json",

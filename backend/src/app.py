@@ -331,6 +331,72 @@ def delete_appointment(tutor_id):
         
     return {"msg": "no appointments were canceled"}, 200
 
+@app.route('/tutor_dashboard<net_id>', methods=['DELETE'])
+def delete_appointmen(net_id):
+    if request.method == 'DELETE':
+        student_id = session["net_id"].upper()
+
+        get_tutor_id = f"SELECT tutor_id FROM Student WHERE netid = %s"
+        cursor.execute(get_tutor_id, (student_id,))
+        results = cursor.fetchall()
+        tutor_id = results[0][0]
+
+        req = request.get_json()
+        start_time = req["start_time"]
+        end_time = req["end_time"]
+        months = {"Jan": "01", "Feb": "02", "Mar":"03", "Apr":"04", "May":"05", "Jun":"06", "Jul":"07", "Aug":"08", "Sep":"09", "Oct":"10", "Nov":"11", "Dec":"12"}
+        temp = start_time.split()
+        start_time = f"{temp[3]}-{months[temp[2]]}-{temp[1]} {temp[4]}"
+
+        temp = end_time.split()
+        end_time = f"{temp[3]}-{months[temp[2]]}-{temp[1]} {temp[4]}"
+        print(start_time)
+
+        update_student_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s " \
+                                f"WHERE netid = %s"
+        
+        update_tutor_hour = f"UPDATE Student SET minutes_tutored = minutes_tutored - %s " \
+                            f"WHERE tutor_id = %s"
+
+        delete_appointment = f"DELETE FROM Appointments WHERE student_id = %s AND " \
+                            f"tutor_id = %s AND start_time = %s"
+        
+        insert_available = f"INSERT INTO Availability (tutor_id, start_time, end_time) VALUES"\
+                            f"(%s,%s,%s)"
+        
+        # Appointment can be canceled until 24 hours prior to the scheduled tutoring session
+        current_date = datetime.datetime.now()
+
+        format = "%Y-%m-%d %H:%M:%S"
+        # convert str start_time to datetime object
+        start_time_datetime = datetime.datetime.strptime(start_time,format)
+        end_time_datetime = datetime.datetime.strptime(end_time,format)
+
+        if current_date+datetime.timedelta(hours=24) >= start_time_datetime:
+            
+            return {"msg": "Appointments can be canceled until 24 hours prior"\
+                    " to the scheduled tutoring session."}, 400
+        else:
+            minutessince = int((end_time_datetime - start_time_datetime).total_seconds() / 60)
+
+            # cancel the scheduled tutoring session
+            cursor.execute(delete_appointment, (net_id, tutor_id, start_time))
+            db.commit()
+            # update the tutoring session
+            cursor.execute(insert_available, (tutor_id, start_time, end_time))
+            db.commit()
+            # update tutor total tutored hours
+            cursor.execute(update_tutor_hour, (minutessince, tutor_id))
+            db.commit()
+            # update student total tutored hours
+            cursor.execute(update_student_hour, (minutessince, net_id))
+            db.commit()
+
+
+            return {"msg": "appointment is canceled"}, 200
+        
+    return {"msg": "no appointments were canceled"}, 200
+
 
 @app.route('/tutor_student_info', methods=['GET'])
 def retrive_students_dashboard():

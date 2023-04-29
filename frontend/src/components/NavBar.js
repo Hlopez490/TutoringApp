@@ -24,7 +24,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from "react-router-dom";
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LogoutIcon from '@mui/icons-material/Logout';
 const drawerWidth = 240;
+
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     ({ theme, open }) => ({
@@ -85,6 +87,22 @@ const NavBar = ({ title }) => {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    const handleLogout = () =>{
+      fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-type': "application/json",
+        }
+      })
+      .then(res => {
+        if (res.ok) {
+          navigate("/")
+        } else {
+           throw new Error("Unable to logout.");
+        }
+      })}
+
 
 
     return (
@@ -170,6 +188,15 @@ const NavBar = ({ title }) => {
                     <AccountCircleIcon /> 
                     </ListItemIcon>
                     <ListItemText primary="Profile"/>
+                  </ListItemButton>
+                </ListItem>
+
+                <ListItem key="Logout" disablePadding onClick={() => handleLogout()}>
+                  <ListItemButton>
+                    <ListItemIcon>
+                    <LogoutIcon /> 
+                    </ListItemIcon>
+                    <ListItemText primary="Logout"/>
                   </ListItemButton>
                 </ListItem>
             </List>
