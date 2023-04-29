@@ -525,7 +525,7 @@ def availability():
         start_time_datetime = datetime.datetime.strptime(start_time,format)
         end_time_datetime = datetime.datetime.strptime(end_time,format)
 
-        if start_time_datetime < current_datetime:
+        if start_time_datetime < current_datetime or start_time_datetime < end_time_datetime:
             return {"msg": "can't assign pass time availability"}, 400
         
     
