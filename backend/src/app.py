@@ -281,16 +281,17 @@ def make_appointment(tutor_id):
         sender = 'comet.academy.utd@gmail.com'
         receiver  = student_email #pull this from database
         receiverName = f"{student_first_name} {student_last_name}" #pull from database
+        print(receiverName)
         subject = "You've scheduled a new appointment!"
-        body  = f"You made a appointment with {tutor_name} from {start_time_datetime} to {end_time_datetime}" #change this to whatever
-        message = f"From: Comet Academy <{sender}>\nTo: {receiverName} <{receiver}>\nSubject: {subject}\n{body}\n"
+        body  = f"Hello {student_first_name},\nYou made a appointment with {tutor_name} from {start_time_datetime} to {end_time_datetime}." #change this to whatever
+        print(str(body))
+        message = f"From: Comet Academy <{sender}>\nTo: {receiverName} <{receiver}>\nSubject: {subject}\n\n{body}\n"
 
         try: 
             #Create your SMTP session 
             server = smtplib.SMTP('smtp.gmail.com')
 
-            #Use TLS to add security 
-            server.smtp.starttls() 
+            #Use TLS to add security  
             server.starttls(context=ssl.create_default_context()) # Secure the connection
             server.login('comet.academy.utd@gmail.com', 'bafnvvonzhvztwcx')
 
