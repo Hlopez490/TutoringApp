@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Calendar from "./components/Calendar";
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 
 
 const Dashboard = () => {
@@ -43,6 +45,20 @@ const Dashboard = () => {
         return (
             <div>
                 <NavBar title ="Dashboard" />
+                <Container maxWidth="sm">
+            <Typography
+              component="h1"
+              variant="h2"
+              align="center"
+              color="text.primary"
+              gutterBottom
+            >
+              Dashboard
+            </Typography>
+            <Typography variant="h5" align="center" color="text.secondary" paragraph>
+              Use calendar to view your past and upcoming sessions as a student.
+            </Typography>
+            </Container>
                 <Calendar />
             </div>
             );

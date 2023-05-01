@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import TutorCalendar from "./components/TutorCalendar"
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 
 const ViewTAppoint = () => {
 
@@ -42,6 +44,20 @@ const ViewTAppoint = () => {
         return (
             <div>
                 <NavBar title ="View Tutor Appointments" />
+                <Container maxWidth="sm">
+            <Typography
+              component="h1"
+              variant="h2"
+              align="center"
+              color="text.primary"
+              gutterBottom
+            >
+              View Tutor Appointments
+            </Typography>
+            <Typography variant="h5" align="center" color="text.secondary" paragraph>
+              Use calendar to view your past and upcoming sessions as a tutor.
+            </Typography>
+            </Container>
                 <TutorCalendar />
             </div>
             );

@@ -216,6 +216,7 @@ const BecomeTutorSteps = () => {
                       onChange={handleFileChange}
                       type="file"
                       name="image"
+                      hidden
                     />
                   </Button>
                 </Grid>
