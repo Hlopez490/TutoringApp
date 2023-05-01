@@ -266,7 +266,8 @@ def make_appointment(tutor_id):
         db.commit()
         
         tutor_name = f"SELECT first_name, last_name FROM Student WHERE tutor_id = %s"
-        student_email = f"SELECT email from Student WHERE netid = %"
+        student_email = f"SELECT email from Student WHERE netid = %s"
+        
 
         cursor.execute(tutor_name, (tutor_id, ))
         result = cursor.fetchall()
@@ -275,6 +276,7 @@ def make_appointment(tutor_id):
         cursor.execute(student_email, (student_id, ))
         result = cursor.fetchall()
         student_email = result[0][0]
+        print(student_email)
 
         import smtplib 
         try: 
@@ -285,7 +287,7 @@ def make_appointment(tutor_id):
             smtp.starttls() 
 
             #User Authentication 
-            smtp.login("comet.academy.utd@gmail.com","123456789Aa@")
+            smtp.login("comet.academy.utd@gmail.com","bafnvvonzhvztwcx")
 
             #Defining The Message 
             message = f"You made a appointment with {tutor_name} from {start_time_datetime} to {end_time_datetime}" 
