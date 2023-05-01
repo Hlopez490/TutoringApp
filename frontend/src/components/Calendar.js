@@ -167,7 +167,7 @@ export default function DateCalendarServerRequest() {
     })
     .then(res => {
       if (res.ok) {
-        navigate("/dashboard");
+        navigate("/allTutors");
         return res.json();
       } else {
           console.log(res.data)
