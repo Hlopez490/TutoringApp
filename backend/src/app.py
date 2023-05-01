@@ -265,6 +265,40 @@ def make_appointment(tutor_id):
         cursor.execute(update_student_hour, (minutessince, student_id))
         db.commit()
         
+        tutor_name = f"SELECT first_name, last_name FROM Student WHERE tutor_id = %s"
+        student_email = f"SELECT email from Student WHERE netid = %"
+
+        cursor.execute(tutor_name, (tutor_id, ))
+        result = cursor.fetchall()
+        tutor_name = result[0][0]
+
+        cursor.execute(student_email, (student_id, ))
+        result = cursor.fetchall()
+        student_email = result[0][0]
+
+        import smtplib 
+        try: 
+            #Create your SMTP session 
+            smtp = smtplib.SMTP('smtp.gmail.com', 587) 
+
+        #Use TLS to add security 
+            smtp.starttls() 
+
+            #User Authentication 
+            smtp.login("comet.academy.utd@gmail.com","123456789Aa@")
+
+            #Defining The Message 
+            message = f"You made a appointment with {tutor_name} from {start_time_datetime} to {end_time_datetime}" 
+            #Sending the Email
+            smtp.sendmail("comet.academy.utd@gmail.com", student_email, message) 
+
+            #Terminating the session 
+            smtp.quit() 
+            print ("Email sent successfully!") 
+
+        except Exception as ex: 
+            print("Something went wrong....",ex)
+        
         return {"msg": "Appointment Scheduled !!"}, 200
     
     return {"msg": "No Appointment Scheduled"}, 200
