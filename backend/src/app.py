@@ -8,6 +8,7 @@ import json
 import os
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
+import smtplib, ssl
 
 app = Flask(__name__)
 app.secret_key = "key"
@@ -266,9 +267,7 @@ def make_appointment(tutor_id):
         db.commit()
         
         tutor_name = f"SELECT first_name, last_name FROM Student WHERE tutor_id = %s"
-        student_email = f"SELECT email from Student WHERE netid = %s"
-        
-
+        student_email = f"SELECT email, first_name, last_name from Student WHERE netid = %s"
         cursor.execute(tutor_name, (tutor_id, ))
         result = cursor.fetchall()
         tutor_name = result[0][0]
@@ -276,26 +275,30 @@ def make_appointment(tutor_id):
         cursor.execute(student_email, (student_id, ))
         result = cursor.fetchall()
         student_email = result[0][0]
-        print(student_email)
+        student_first_name = result[0][1]
+        student_last_name = result[0][2]
 
-        import smtplib 
+        sender = 'comet.academy.utd@gmail.com'
+        receiver  = student_email #pull this from database
+        receiverName = f"{student_first_name} {student_last_name}" #pull from database
+        subject = "You've scheduled a new appointment!"
+        body  = f"You made a appointment with {tutor_name} from {start_time_datetime} to {end_time_datetime}" #change this to whatever
+        message = f"From: Comet Academy <{sender}>\nTo: {receiverName} <{receiver}>\nSubject: {subject}\n{body}\n"
+
         try: 
             #Create your SMTP session 
-            smtp = smtplib.SMTP('smtp.gmail.com', 587) 
+            server = smtplib.SMTP('smtp.gmail.com')
 
-        #Use TLS to add security 
-            smtp.starttls() 
+            #Use TLS to add security 
+            server.smtp.starttls() 
+            server.starttls(context=ssl.create_default_context()) # Secure the connection
+            server.login('comet.academy.utd@gmail.com', 'bafnvvonzhvztwcx')
 
-            #User Authentication 
-            smtp.login("comet.academy.utd@gmail.com","bafnvvonzhvztwcx")
-
-            #Defining The Message 
-            message = f"You made a appointment with {tutor_name} from {start_time_datetime} to {end_time_datetime}" 
-            #Sending the Email
-            smtp.sendmail("comet.academy.utd@gmail.com", student_email, message) 
+            print(message)
+            server.sendmail("comet.academy.utd@gmail.com", student_email, message)
 
             #Terminating the session 
-            smtp.quit() 
+            server.quit() 
             print ("Email sent successfully!") 
 
         except Exception as ex: 
