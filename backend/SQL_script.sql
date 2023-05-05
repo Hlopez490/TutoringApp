@@ -6,7 +6,7 @@ CREATE TABLE Student(
     email VARCHAR(255),
     password VARCHAR(255),
     minutes_tutored INTEGER,
-    tutor_id VARCHAR(255)L,
+    tutor_id VARCHAR(255),
     index is_tutor(tutor_id),
     PRIMARY KEY(netid)
 );
