@@ -50,7 +50,7 @@ in the the `connector.py`. This DB is hosted on AWS.
 
 ## Frontend
 
-Open another terminal "Ctrl + `" 
+In VsCode open another terminal "Ctrl + `" 
 
 Install React app -- will take a bit to install
 ```bash
