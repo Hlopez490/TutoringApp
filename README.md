@@ -1,4 +1,4 @@
-# Online Tutroing Deployment
+# Online Tutoring Deployment
 
 
 #### Download necessary tools
